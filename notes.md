@@ -1,6 +1,4 @@
 # My notes
 Test 1
 
-We are good to go. 
-
-Is this up? 
+We are good to go.  
