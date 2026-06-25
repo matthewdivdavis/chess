@@ -73,23 +73,55 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> moves = new ArrayList<>();
         if(piece.getPieceType() == PieceType.BISHOP){
-
-            int[][] directions = {
-                    {1, 1},
-                    {1, -1},
-                    {-1, 1},
-                    {-1, -1}
-            };
-
+            int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
             for (int[] dir : directions) {
                 int r = myPosition.getRow() + dir[0];
                 int c = myPosition.getColumn() + dir[1];
-
                 while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
                     r += dir[0];
                     c += dir[1];
                 }
+            }
+        }
+        if(piece.getPieceType() == PieceType.ROOK){
+            int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}};
+            for (int[] dir : directions){
+                int r = myPosition.getRow() + dir[0];
+                int c = myPosition.getColumn() + dir[1];
+                while(r >= 1 && r <= 8 && c >= 1 && c <= 8){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
+                    r += dir[0];
+                    c += dir[1];
+                }
+            }
+        }
+        if(piece.getPieceType() == PieceType.QUEEN){
+            int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            for (int[] dir : directions){
+                int r = myPosition.getRow() + dir[0];
+                int c = myPosition.getColumn() + dir[1];
+                while(r >= 1 && r <= 8 && c >= 1 && c <= 8){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
+                    r += dir[0];
+                    c += dir[1];
+                }
+            }
+        }
+        if(piece.getPieceType() == PieceType.KING){
+            int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            for (int[] dir : directions){
+                int r = myPosition.getRow() + dir[0];
+                int c = myPosition.getColumn() + dir[1];
+                moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
+            }
+        }
+        if(piece.getPieceType() == PieceType.PAWN){
+            if(pieceColor == ChessGame.TeamColor.BLACK){
+                if(myPosition.getRow() == 7){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn()), null));
+                }
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), null));
             }
         }
         return moves;
