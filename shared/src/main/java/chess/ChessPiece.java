@@ -73,48 +73,24 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> moves = new ArrayList<>();
         if(piece.getPieceType() == PieceType.BISHOP){
-            int r = myPosition.getRow() + 1, c = myPosition.getColumn() + 1;
-            while(r <= 8 && c <= 8){
-                while(c <= 8 && r <= 8){
-                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
-                    r++;
-                    c++;
-                }
-            }
-            r = myPosition.getRow() - 1;
-            c = myPosition.getColumn() - 1;
-            while(r > 0 && c > 0){
-                while(c > 0 && r > 0){
-                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
-                    r--;
-                    c--;
-                }
-            }
 
-            r = myPosition.getRow() + 1;
-            c = myPosition.getColumn() - 1;
-            while(r <= 8 && c > 0){
-                while(c > 0 && r <= 8){
+            int[][] directions = {
+                    {1, 1},
+                    {1, -1},
+                    {-1, 1},
+                    {-1, -1}
+            };
+
+            for (int[] dir : directions) {
+                int r = myPosition.getRow() + dir[0];
+                int c = myPosition.getColumn() + dir[1];
+
+                while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
                     moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
-                    r++;
-                    c--;
+                    r += dir[0];
+                    c += dir[1];
                 }
             }
-            r = myPosition.getRow() - 1;
-            c = myPosition.getColumn() + 1;
-            while(r > 0 && c <= 8){
-                while(c <= 8){
-                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
-                    r--;
-                    c++;
-                }
-            }
-
-
-//            System.out.println("Break");
-//            for(ChessMove i : moves){
-//                System.out.println(i);
-//            }
         }
         return moves;
     }
