@@ -1,7 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -45,6 +47,20 @@ public class ChessPiece {
         return type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -53,25 +69,53 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+
         ChessPiece piece = board.getPiece(myPosition);
+        List<ChessMove> moves = new ArrayList<>();
         if(piece.getPieceType() == PieceType.BISHOP){
-            int diff = myPosition.getRow() - myPosition.getColumn();
-            int row_start = 1 + diff;
-            int col_start = 1;
-            for(int r=row_start; r < 8;){
-                for(int c=col_start; c < 8; c++){
-                    System.out.println("[" + r + ", " + c + "]");
+            int r = myPosition.getRow() + 1, c = myPosition.getColumn() + 1;
+            while(r <= 8 && c <= 8){
+                while(c <= 8 && r <= 8){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
                     r++;
+                    c++;
                 }
             }
-            System.out.println("Break");
-            for(int r=8; r > diff;){
-                for(int c = 1; c <= 8; c++){
-                    System.out.println("[" + r + ", " + c + "]");
+            r = myPosition.getRow() - 1;
+            c = myPosition.getColumn() - 1;
+            while(r > 0 && c > 0){
+                while(c > 0 && r > 0){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
                     r--;
+                    c--;
                 }
             }
+
+            r = myPosition.getRow() + 1;
+            c = myPosition.getColumn() - 1;
+            while(r <= 8 && c > 0){
+                while(c > 0 && r <= 8){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
+                    r++;
+                    c--;
+                }
+            }
+            r = myPosition.getRow() - 1;
+            c = myPosition.getColumn() + 1;
+            while(r > 0 && c <= 8){
+                while(c <= 8){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r, c), null));
+                    r--;
+                    c++;
+                }
+            }
+
+
+//            System.out.println("Break");
+//            for(ChessMove i : moves){
+//                System.out.println(i);
+//            }
         }
-        return List.of();
+        return moves;
     }
 }
