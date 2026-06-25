@@ -159,14 +159,46 @@ public class ChessPiece {
         if(piece.getPieceType() == PieceType.PAWN && pieceColor == ChessGame.TeamColor.BLACK){
             int r = myPosition.getRow();
             int c = myPosition.getColumn();
-            if(board.getPiece(new ChessPosition(r-1, c)) == null){
+            // case 1: normal pawn move
+            if(board.getPiece(new ChessPosition(r-1, c)) == null
+                    && r-1 != 1){
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), null));
-            } else if (board.getPiece(new ChessPosition(r-1, c-1)) != null
-                    && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor){
+            }
+            // case 2: pawn capture (left)
+            else if (board.getPiece(new ChessPosition(r-1, c-1)) != null
+                    && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor
+                    && r-1 != 1){
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c - 1), null));
-            } else if (board.getPiece(new ChessPosition(r-1, c+1)) != null
-                    && board.getPiece(new ChessPosition(r-1, c+1)).pieceColor != piece.pieceColor){
+            }
+            // case 3: pawn capture (right)
+            else if (board.getPiece(new ChessPosition(r-1, c+1)) != null
+                    && board.getPiece(new ChessPosition(r-1, c+1)).pieceColor != piece.pieceColor
+                    && r-1 != 1){
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c + 1), null));
+            }
+            // case 4: pawn promote (no capture)
+            else if (board.getPiece(new ChessPosition(r-1, c)) == null
+                    && r-1 == 1) {
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        System.out.println(type);
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), type));
+                    }
+                }
+
+            }
+            // case 5: pawn promote (capture)
+            else if (board.getPiece(new ChessPosition(r - 1, c - 1)) != null
+//                    && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor
+//                    && r-1 == 1
+            ) {
+                System.out.println("In outer loop");
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        System.out.println(type);
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), type));
+                    }
+                }
             }
         }
         return moves;
