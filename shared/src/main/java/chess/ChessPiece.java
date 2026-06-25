@@ -55,7 +55,22 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         if(piece.getPieceType() == PieceType.BISHOP){
-            return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
+            int diff = myPosition.getRow() - myPosition.getColumn();
+            int row_start = 1 + diff;
+            int col_start = 1;
+            for(int r=row_start; r < 8;){
+                for(int c=col_start; c < 8; c++){
+                    System.out.println("[" + r + ", " + c + "]");
+                    r++;
+                }
+            }
+            System.out.println("Break");
+            for(int r=8; r > diff;){
+                for(int c = 1; c <= 8; c++){
+                    System.out.println("[" + r + ", " + c + "]");
+                    r--;
+                }
+            }
         }
         return List.of();
     }
