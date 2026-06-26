@@ -95,6 +95,7 @@ public class ChessPiece {
                 }
             }
         }
+//ROOK
         if(piece.getPieceType() == PieceType.ROOK){
             int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}};
             for (int[] dir : directions){
@@ -118,6 +119,7 @@ public class ChessPiece {
                 }
             }
         }
+// QUEEN
         if(piece.getPieceType() == PieceType.QUEEN){
             int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
             for (int[] dir : directions){
@@ -141,6 +143,7 @@ public class ChessPiece {
                 }
             }
         }
+// KING
         if(piece.getPieceType() == PieceType.KING){
             int[][] directions = {{0, 1}, {0,-1}, {1, 0}, {-1,0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
             for (int[] dir : directions){
@@ -156,7 +159,9 @@ public class ChessPiece {
                 }
             }
         }
-        if(piece.getPieceType() == PieceType.PAWN && pieceColor == ChessGame.TeamColor.BLACK){
+// BLACK PAWN
+        if(piece.getPieceType() == PieceType.PAWN && pieceColor == ChessGame.TeamColor.BLACK
+                && myPosition.getRow() != 1){
             int r = myPosition.getRow();
             int c = myPosition.getColumn();
             // case 1: normal pawn move
@@ -165,42 +170,113 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), null));
             }
             // case 2: pawn capture (left)
-            else if (board.getPiece(new ChessPosition(r-1, c-1)) != null
+            if (c != 1 && board.getPiece(new ChessPosition(r-1, c-1)) != null
                     && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor
                     && r-1 != 1){
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c - 1), null));
             }
             // case 3: pawn capture (right)
-            else if (board.getPiece(new ChessPosition(r-1, c+1)) != null
+            if (c != 8 && board.getPiece(new ChessPosition(r-1, c+1)) != null
                     && board.getPiece(new ChessPosition(r-1, c+1)).pieceColor != piece.pieceColor
                     && r-1 != 1){
                 moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c + 1), null));
             }
             // case 4: pawn promote (no capture)
-            else if (board.getPiece(new ChessPosition(r-1, c)) == null
+            if (board.getPiece(new ChessPosition(r-1, c)) == null
                     && r-1 == 1) {
                 for(PieceType type : PieceType.values()){
                     if(type != PieceType.PAWN && type != PieceType.KING){
-                        System.out.println(type);
                         moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), type));
                     }
                 }
 
             }
-            // case 5: pawn promote (capture)
-            else if (board.getPiece(new ChessPosition(r - 1, c - 1)) != null
-//                    && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor
-//                    && r-1 == 1
-            ) {
-                System.out.println("In outer loop");
+            // case 5: pawn promote (capture left)
+            if (c != 1 && board.getPiece(new ChessPosition(r -1, c - 1)) != null
+                    && r - 1 == 1
+                    && board.getPiece(new ChessPosition(r-1, c-1)).pieceColor != piece.pieceColor) {
                 for(PieceType type : PieceType.values()){
                     if(type != PieceType.PAWN && type != PieceType.KING){
-                        System.out.println(type);
-                        moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), type));
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r-1, c-1), type));
                     }
                 }
+            }
+            // case 6: pawn promote (capture right
+            if (c != 8 && board.getPiece(new ChessPosition(r -1, c + 1)) != null
+                    && r - 1 == 1
+                    && board.getPiece(new ChessPosition(r-1, c+1)).pieceColor != piece.pieceColor) {
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r-1, c+1), type));
+                    }
+                }
+            }
+            // case 7: first row move
+            if (r == 7 && board.getPiece(new ChessPosition(r-2, c)) == null
+                    && board.getPiece(new ChessPosition(r-1, c)) == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(r - 2, c), null));
+            }
+        }
+// PAWN WHITE
+        if(piece.getPieceType() == PieceType.PAWN && pieceColor == ChessGame.TeamColor.WHITE
+                && myPosition.getRow() != 8){
+            int r = myPosition.getRow();
+            int c = myPosition.getColumn();
+            // case 1: normal pawn move
+            if(board.getPiece(new ChessPosition(r+1, c)) == null
+                    && r+1 != 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c), null));
+            }
+            // case 2: pawn capture (left)
+            if (c != 1 && board.getPiece(new ChessPosition(r+1, c-1)) != null
+                    && board.getPiece(new ChessPosition(r+1, c-1)).pieceColor != piece.pieceColor
+                    && r+1 != 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c - 1), null));
+            }
+            // case 3: pawn capture (right)
+            if (c != 8 && board.getPiece(new ChessPosition(r+1, c+1)) != null
+                    && board.getPiece(new ChessPosition(r+1, c+1)).pieceColor != piece.pieceColor
+                    && r+1 != 8){
+                moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c + 1), null));
+            }
+            // case 4: pawn promote (no capture)
+            if (board.getPiece(new ChessPosition(r+1, c)) == null
+                    && r+1 == 8) {
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c), type));
+                    }
+                }
+
+            }
+            // case 5: pawn promote (capture left)
+            if (c != 1 && board.getPiece(new ChessPosition(r + 1, c - 1)) != null
+                    && r + 1 == 8
+                    && board.getPiece(new ChessPosition(r+1, c-1)).pieceColor != piece.pieceColor) {
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r+1, c-1), type));
+                    }
+                }
+            }
+            // case 6: pawn promote (capture right)
+            if (c != 8 && board.getPiece(new ChessPosition(r + 1, c + 1)) != null
+                    && r + 1 == 8
+                    && board.getPiece(new ChessPosition(r+1, c+1)).pieceColor != piece.pieceColor) {
+                for(PieceType type : PieceType.values()){
+                    if(type != PieceType.PAWN && type != PieceType.KING){
+                        moves.add(new ChessMove(myPosition, new ChessPosition(r+1, c+1), type));
+                    }
+                }
+            }
+            // case 7: first row move
+            if (r == 2 && board.getPiece(new ChessPosition(r+2, c)) == null
+                    && board.getPiece(new ChessPosition(r+1, c)) == null
+            ){
+                moves.add(new ChessMove(myPosition, new ChessPosition(r + 2, c), null));
             }
         }
         return moves;
     }
+
 }
