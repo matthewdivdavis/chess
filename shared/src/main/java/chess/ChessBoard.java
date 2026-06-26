@@ -64,11 +64,11 @@ public class ChessBoard {
             addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         }
         // ADD BLACK ROOK
-        addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
         // ADD WHITE ROOK
-        addPiece(new ChessPosition(8, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(8, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(1, 1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(1, 8), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
 
         // ADD BLACK KNIGHT
         addPiece(new ChessPosition(8, 2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
@@ -93,5 +93,51 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
         // ADD WHITE KING
         addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for( int r = 8; r >= 1; r--){
+            sb.append(r).append(" ");
+            for(int c = 1; c <= 8; c++){
+                ChessPiece piece = getPiece(new ChessPosition(r, c));
+                if(piece == null){
+                    sb.append(". ");
+                }
+                else{
+                    char symbol;
+                    switch (piece.getPieceType()) {
+                        case KING:
+                            symbol = 'K';
+                            break;
+                        case QUEEN:
+                            symbol = 'Q';
+                            break;
+                        case ROOK:
+                            symbol = 'R';
+                            break;
+                        case BISHOP:
+                            symbol = 'B';
+                            break;
+                        case KNIGHT:
+                            symbol = 'N';
+                            break;
+                        case PAWN:
+                            symbol = 'P';
+                            break;
+                        default:
+                            symbol = '?';
+                    }
+                    if(piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                        symbol = Character.toLowerCase(symbol);
+                    }
+                    sb.append(symbol).append(" ");
+                }
+            }
+            sb.append("\n");
+        }
+        sb.append("  1 2 3 4 5 6 7 8");
+        return sb.toString();
     }
 }
