@@ -124,15 +124,6 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if(board.getPiece(move.getStartPosition()) != null) {
-            // move not in move list
-//            if(!board.getPiece(move.getStartPosition()).pieceMoves(board, move.getStartPosition()).contains(move.getEndPosition())){
-//                throw new InvalidMoveException();
-//            }
-            // capture own team
-            if(board.getPiece(move.getEndPosition()) != null
-                    && board.getPiece(move.getStartPosition()).getTeamColor() == board.getPiece(move.getEndPosition()).getTeamColor()){
-                throw new InvalidMoveException();
-            }
             setTeamTurn(board.getPiece(move.getStartPosition()).getTeamColor());
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
             board.removePiece(move.getStartPosition());
