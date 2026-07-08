@@ -26,6 +26,10 @@ public class ChessBoard {
         squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
+    public void removePiece(ChessPosition position){
+        squares[position.getRow() - 1][position.getColumn() - 1] = null;
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -39,7 +43,8 @@ public class ChessBoard {
     public ChessPosition getKing(ChessGame.TeamColor color){
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
-                if(getPiece(new ChessPosition(r, c)).getTeamColor() == color
+                if(getPiece(new ChessPosition(r, c)) != null
+                        && getPiece(new ChessPosition(r, c)).getTeamColor() == color
                         && getPiece(new ChessPosition(r, c)).getPieceType() == ChessPiece.PieceType.KING){
                     return new ChessPosition(r, c);
                 }
@@ -47,6 +52,7 @@ public class ChessBoard {
         }
         return new ChessPosition(1, 1);
     }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

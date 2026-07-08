@@ -56,31 +56,40 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        // Get move list
-        // loop through list and return non-nulls
+        // Create a new piece and get all the current moves
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> valid = new ArrayList<>();
-        isInCheck(board.getPiece(startPosition).getTeamColor());
-
+        // loop through the moves and add the valid moves
         for(ChessMove move : moves){
-            if(board.getPiece(move.getEndPosition()) != null && board.getPiece(move.getEndPosition()).getTeamColor() != board.getPiece(startPosition).getTeamColor()){
-                valid.add(move);
+            if(board.getPiece(move.getEndPosition()) != null
+                    && board.getPiece(move.getEndPosition()).getTeamColor() != getTeamTurn()) {
+                // Make a new board to test moves on
+                ChessGame new_board = new ChessGame();
+                new_board.setBoard(board);
+                try {
+                    new_board.makeMove(move);
+                    if (!new_board.isInCheck(getTeamTurn())) {
+                        valid.add(move);
+                    }
+                } catch (InvalidMoveException e) {
+                    throw new RuntimeException(e);
+                }
+            }else if(board.getPiece(move.getEndPosition()) == null){
+                ChessGame new_board = new ChessGame();
+                new_board.setBoard(board);
+                try {
+                    new_board.makeMove(move);
+                    if(!new_board.isInCheck(getTeamTurn())){
+                        valid.add(move);
+                    }
+                } catch (InvalidMoveException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return valid;
     }
-
-    /**
-     * Makes a move in the chess game
-     *
-     * @param move chess move to perform
-     * @throws InvalidMoveException if move is invalid
-     */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
-    }
-
     /**
      * Determines if the given team is in check
      *
@@ -93,9 +102,10 @@ public class ChessGame {
         ChessPosition king = board.getKing(teamColor);
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
-                if(board.getPiece(new ChessPosition(r, c)) != null){
+                if(board.getPiece(new ChessPosition(r, c)) != null
+                        && board.getPiece(new ChessPosition(r, c)).getTeamColor() != teamColor){
                     for(ChessMove move : board.getPiece(new ChessPosition(r, c)).pieceMoves(board, new ChessPosition(r, c))){
-                        if(move.getEndPosition() == king){
+                        if(move.getEndPosition().equals(king)){
                             return true;
                         }
                     }
@@ -104,6 +114,18 @@ public class ChessGame {
         }
         return false;
     }
+
+    /**
+     * Makes a move in the chess game
+     *
+     * @param move chess move to perform
+     * @throws InvalidMoveException if move is invalid
+     */
+    public void makeMove(ChessMove move) throws InvalidMoveException {
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.removePiece(move.getStartPosition());
+    }
+
 
     /**
      * Determines if the given team is in checkmate
@@ -139,7 +161,13 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = board;
+        for(int r = 1; r <= 8; r++){
+            for(int c = 1; c <= 8; c++){
+                if(board.getPiece(new ChessPosition(r, c)) != null){
+                    this.board.addPiece(new ChessPosition(r, c), board.getPiece(new ChessPosition(r, c)));
+                }
+            }
+        }
     }
 
     /**
@@ -149,5 +177,10 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    public String toString() {
+        return board.toString();
     }
 }
