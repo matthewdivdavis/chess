@@ -33,10 +33,10 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         if(team == TeamColor.WHITE){
-            team = TeamColor.BLACK;
+            this.team = TeamColor.BLACK;
         }
         else{
-            team = TeamColor.WHITE;
+            this.team = TeamColor.WHITE;
         }
     }
 
@@ -123,8 +123,24 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-        board.removePiece(move.getStartPosition());
+        if(board.getPiece(move.getStartPosition()) != null) {
+            // move not in move list
+//            if(!board.getPiece(move.getStartPosition()).pieceMoves(board, move.getStartPosition()).contains(move.getEndPosition())){
+//                throw new InvalidMoveException();
+//            }
+            // capture own team
+            if(board.getPiece(move.getEndPosition()) != null
+                    && board.getPiece(move.getStartPosition()).getTeamColor() == board.getPiece(move.getEndPosition()).getTeamColor()){
+                throw new InvalidMoveException();
+            }
+            setTeamTurn(board.getPiece(move.getStartPosition()).getTeamColor());
+            board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+            board.removePiece(move.getStartPosition());
+
+        }
+        else{
+            throw new InvalidMoveException();
+        }
     }
 
 
@@ -162,6 +178,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+        this.board = new ChessBoard();
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
                 if(board.getPiece(new ChessPosition(r, c)) != null){
