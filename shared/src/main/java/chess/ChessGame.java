@@ -122,8 +122,45 @@ public class ChessGame {
      * @param move chess move to perform
      * @throws InvalidMoveException if move is invalid
      */
+    public void moveHelp(ChessMove move) throws InvalidMoveException {
+
+    }
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // wrong turn case
+//        if(board.getPiece(move.getStartPosition()) != null
+//                && getTeamTurn() == board.getPiece(move.getStartPosition()).getTeamColor()){
+//            throw new InvalidMoveException();
+//        }
+        // Piece exists
         if(board.getPiece(move.getStartPosition()) != null) {
+            if(board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN
+                    && move.getPromotionPiece() != null){
+                ChessPiece piece = new ChessPiece(board.getPiece(move.getStartPosition()).getTeamColor(), move.getPromotionPiece());
+                setTeamTurn(piece.getTeamColor());
+                board.addPiece(move.getEndPosition(), piece);
+                board.removePiece(move.getStartPosition());
+                return;
+            }
+            // if king is in check
+            if(isInCheck(board.getPiece(move.getStartPosition()).getTeamColor())){
+                ChessGame newBoard = new ChessGame();
+                newBoard.setBoard(board);
+                newBoard.getBoard().addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                newBoard.getBoard().removePiece(move.getStartPosition());
+                if(newBoard.isInCheck(board.getPiece(move.getStartPosition()).getTeamColor())){
+                    throw new InvalidMoveException();
+                }
+            }
+            // Capture cases
+            if(board.getPiece(move.getEndPosition()) != null){
+                if(board.getPiece(move.getEndPosition()).getTeamColor() == board.getPiece(move.getStartPosition()).getTeamColor()){
+                    throw new InvalidMoveException();
+                }
+            }
+            // move not in move list
+            if(!board.getPiece(move.getStartPosition()).pieceMoves(board, move.getStartPosition()).contains(move)){
+                throw new InvalidMoveException();
+            }
             setTeamTurn(board.getPiece(move.getStartPosition()).getTeamColor());
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
             board.removePiece(move.getStartPosition());
