@@ -90,12 +90,19 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         // loop through the board, if any piece on the board is not the team color, get their move list
         // if anything on that move list == kings position then return true else false
+        ChessPosition king = board.getKing(teamColor);
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
-                System.out.println(board.getPiece(new ChessPosition(r, c)));
+                if(board.getPiece(new ChessPosition(r, c)) != null){
+                    for(ChessMove move : board.getPiece(new ChessPosition(r, c)).pieceMoves(board, new ChessPosition(r, c))){
+                        if(move.getEndPosition() == king){
+                            return true;
+                        }
+                    }
+                }
             }
         }
-        return true;
+        return false;
     }
 
     /**
