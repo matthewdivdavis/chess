@@ -62,25 +62,26 @@ public class ChessGame {
         Collection<ChessMove> valid = new ArrayList<>();
         // loop through the moves and add the valid moves
         for(ChessMove move : moves){
+            // Make a new board to test moves on
+            ChessGame new_board = new ChessGame();
+            new_board.setBoard(board);
+            // See if spot has opposing team in it
             if(board.getPiece(move.getEndPosition()) != null
-                    && board.getPiece(move.getEndPosition()).getTeamColor() != getTeamTurn()) {
-                // Make a new board to test moves on
-                ChessGame new_board = new ChessGame();
-                new_board.setBoard(board);
+                    && board.getPiece(move.getEndPosition()).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
                 try {
                     new_board.makeMove(move);
-                    if (!new_board.isInCheck(getTeamTurn())) {
+                    if (!new_board.isInCheck(board.getPiece(startPosition).getTeamColor())) {
                         valid.add(move);
                     }
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }
-            }else if(board.getPiece(move.getEndPosition()) == null){
-                ChessGame new_board = new ChessGame();
-                new_board.setBoard(board);
+            }
+            // See if spot is empty
+            else if(board.getPiece(move.getEndPosition()) == null){
                 try {
                     new_board.makeMove(move);
-                    if(!new_board.isInCheck(getTeamTurn())){
+                    if(!new_board.isInCheck(board.getPiece(startPosition).getTeamColor())){
                         valid.add(move);
                     }
                 } catch (InvalidMoveException e) {
