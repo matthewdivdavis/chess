@@ -94,6 +94,7 @@ public class ChessGame {
 //            System.out.println("In 'castle' function");
 //            valid.add(move);
 //        }
+
         return valid;
     }
     public Collection<ChessMove> castle(ChessPosition startPosition){
