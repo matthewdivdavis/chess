@@ -90,10 +90,10 @@ public class ChessGame {
                 }
             }
         }
-        for(ChessMove move : castle(startPosition)){
-            System.out.println("In 'castle' function");
-            valid.add(move);
-        }
+//        for(ChessMove move : castle(startPosition)){
+//            System.out.println("In 'castle' function");
+//            valid.add(move);
+//        }
         return valid;
     }
     public Collection<ChessMove> castle(ChessPosition startPosition){
