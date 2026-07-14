@@ -17,7 +17,7 @@ public class Server {
 
         // Register your endpoints and exception handlers here.
         javalin.post("/user", new RegisterHandler(userService));
-//        javalin.post("/session", new LoginHandler(userService));
+        javalin.post("/session", new LoginHandler(userService));
 //        javalin.delete("/session", new LogoutHandler(userService));
 //        javalin.get("/game", new ListHandler(userService));
 //        javalin.post("/game", new CreateHandler(userService));

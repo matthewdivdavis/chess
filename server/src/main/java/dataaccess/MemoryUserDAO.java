@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.*;
+import service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,13 @@ public class MemoryUserDAO {
         }
         return null;
     }
-    public boolean containsUser(String username){
+    public UserData getPassword(String username, String password){
         for(UserData user : users){
-            if(username.equals(user.username())) return true;
+            if(username.equals(user.username())
+                    && password.equals(user.password())){
+                return user;
+            }
         }
-        return false;
+        return null;
     }
 }
