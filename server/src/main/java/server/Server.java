@@ -1,6 +1,8 @@
 package server;
 
+import handlers.*;
 import io.javalin.*;
+import io.javalin.http.Handler;
 
 public class Server {
 
@@ -10,6 +12,13 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
+        javalin.post("/user", new RegisterHandler());
+        javalin.post("/session", new LoginHandler());
+        javalin.delete("/session", new LogoutHandler());
+        javalin.get("/game", new ListHandler());
+        javalin.post("/game", new CreateHandler());
+        javalin.put("/game", new JoinHandler());
+        javalin.delete("/db", new ClearHandler());
 
     }
 
