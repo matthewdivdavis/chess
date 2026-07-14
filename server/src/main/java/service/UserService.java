@@ -41,4 +41,12 @@ public class UserService{
         authMem.addAuth(auth);
         return new LoginResult(request.username(), auth.getAuthToken());
     }
+
+    public LogoutResult logout(LogoutRequest request) throws DataAccessException{
+        if(authMem.getAuth(request.authToken()) == null){
+            throw new DataAccessException("unauthorized");
+        }
+        authMem.remove(request.authToken());
+        return null;
+    }
 }

@@ -28,4 +28,13 @@ public class MemoryUserDAO {
         }
         return null;
     }
+
+    public void remove(String username){
+        for(UserData u : users){
+            if(username.equals(u.username())){
+                users.remove(u);
+                return;
+            }
+        }
+    }
 }

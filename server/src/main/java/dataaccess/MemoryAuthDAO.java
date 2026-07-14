@@ -11,12 +11,20 @@ public class MemoryAuthDAO {
     public void addAuth(AuthData auth){
         auths.add(auth);
     }
-    public AuthData getAuth(String username){
+    public AuthData getAuth(String authToken){
         for(AuthData auth : auths){
-            if(auth.getUsername().equals(username)){
+            if(auth.getAuthToken().equals(authToken)){
                 return auth;
             }
         }
         return null;
+    }
+    public void remove(String authToken){
+        for(AuthData a : auths){
+            if(a.getAuthToken().equals(authToken)){
+                auths.remove(a);
+                return;
+            }
+        }
     }
 }

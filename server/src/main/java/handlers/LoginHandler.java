@@ -19,7 +19,6 @@ public class LoginHandler implements Handler{
     public void handle(Context ctx){
         Gson gson = new Gson();
         LoginRequest loginRequest = gson.fromJson(ctx.body(), LoginRequest.class);
-        System.out.println(loginRequest);
         try{
             LoginResult result = userService.login(loginRequest);
             ctx.result(gson.toJson(result));
