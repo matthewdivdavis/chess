@@ -8,5 +8,6 @@ public class ListHandler implements Handler {
     public void handle(Context ctx){
         System.out.println(ctx.body());
         System.out.println("List Games");
+//        return ctx;
     }
 }

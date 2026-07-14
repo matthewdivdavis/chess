@@ -8,5 +8,6 @@ public class ClearHandler implements Handler {
     public void handle(Context ctx){
         System.out.println(ctx.body());
         System.out.println("Clear ALL");
+//        return ctx;
     }
 }

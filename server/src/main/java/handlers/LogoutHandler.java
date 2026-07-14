@@ -8,6 +8,7 @@ public class LogoutHandler implements Handler{
     public void handle(Context ctx){
         System.out.println(ctx.body());
         System.out.println("Logout");
+//        return ctx;
     }
 }
 

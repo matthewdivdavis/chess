@@ -11,15 +11,16 @@ public class MemoryUserDAO {
     public void addUser(UserData user){
         users.add(user);
     }
+
     public UserData getUser(String username){
         for(UserData user : users){
-            if(username.equals(user.getUsername())) return user;
+            if(username.equals(user.username())) return user;
         }
         return null;
     }
     public boolean containsUser(String username){
         for(UserData user : users){
-            if(username.equals(user.getUsername())) return true;
+            if(username.equals(user.username())) return true;
         }
         return false;
     }

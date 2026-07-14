@@ -7,18 +7,28 @@ import io.javalin.http.Handler;
 import server.*;
 import service.*;
 
+import java.util.Map;
+
 public class RegisterHandler implements Handler {
+    UserService userService;
+    public RegisterHandler(UserService userService){
+        this.userService = userService;
+    }
+
     @Override
     public void handle(Context ctx){
-        System.out.println(ctx.body());
         Gson gson = new Gson();
         RegisterRequest registerRequest = gson.fromJson(ctx.body(), RegisterRequest.class);
-
-        try {
-            RegisterResult result = UserService.register(registerRequest);
+        try{
+            RegisterResult result = userService.register(registerRequest);
+            ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            ctx.status(403);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
+            ctx.contentType("application/json");
         }
-
     }
 }
