@@ -206,7 +206,6 @@ public class ServiceTests {
             userService.create(request);
         });
     }
-
     // LIST
     // JOIN
     // CLEAR
