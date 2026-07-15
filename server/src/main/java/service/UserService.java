@@ -67,10 +67,9 @@ public class UserService{
         if(authMem.getAuth(request.authToken()) == null){
             throw new DataAccessException("unauthorized");
         }
-        GameData game = new GameData(gameMem.createID());
+        GameData game = GameDAO.createGame(gameMem.createID());
         game.setGameName(request.gameName());
         gameMem.addGame(game);
-        System.out.println(gameMem.size());
         return new CreateResult(game.getGameID());
     }
 
@@ -78,6 +77,7 @@ public class UserService{
         if(authMem.getAuth(request.authToken()) == null){
             throw new DataAccessException("unauthorized");
         }
+
         ArrayList<GameResult> result = new ArrayList<>();
         for(int i = 0; i < gameMem.size(); i++){
             result.add(new GameResult(gameMem.at(i)));
@@ -97,12 +97,15 @@ public class UserService{
             System.out.println("GameID = " + request.gameID());
             throw new MissingDataException("gameID not found");
         }
+        if(!request.playerColor().equals("BLACK") && !request.playerColor().equals("WHITE")){
+            throw new MissingDataException("color does not exist");
+        }
         if(request.playerColor().equals("BLACK")){
             if(gameMem.getGame(request.gameID()).getBlackUsername() == null){
                 gameMem.getGame(request.gameID()).setBlackUsername(authMem.getAuth(authToken).getUsername());
             }
             else{
-                throw new DataAccessException("color taken");
+                throw new NameTakenException("color taken");
             }
         }else{
             if(gameMem.getGame(request.gameID()).getWhiteUsername() == null){

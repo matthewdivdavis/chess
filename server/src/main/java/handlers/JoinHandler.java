@@ -2,6 +2,8 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.MissingDataException;
+import dataaccess.NameTakenException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.eclipse.jetty.server.Authentication;
@@ -28,6 +30,18 @@ public class JoinHandler implements Handler {
         try{
             JoinResult result = userService.join(authTok, request);
             ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
+        } catch (NameTakenException e){
+            ctx.status(403);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
+            ctx.contentType("application/json");
+        } catch (MissingDataException e){
+            ctx.status(400);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
             ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);

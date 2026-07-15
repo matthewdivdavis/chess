@@ -1,4 +1,4 @@
-package dataaccess;
+package server;
 
 import org.jetbrains.annotations.NotNull;
 

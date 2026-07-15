@@ -4,11 +4,10 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MemoryGameDAO {
     private final List<GameData> games = new ArrayList<>();
-    private int ID = 0;
+    private int ID = 1;
 
     public void addGame(GameData game){
         games.add(game);

@@ -1,7 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataaccess.CreateRequest;
+import server.CreateRequest;
 import dataaccess.DataAccessException;
 import dataaccess.MissingDataException;
 import io.javalin.http.Context;
@@ -29,6 +29,7 @@ public class CreateHandler implements Handler {
 
         try{
             CreateResult result = userService.create(request);
+//            ctx.json(result.gameId());
             ctx.result(gson.toJson(result));
             ctx.contentType("application/json");
         } catch (MissingDataException e){
