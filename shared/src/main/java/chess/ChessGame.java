@@ -106,14 +106,14 @@ public class ChessGame {
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
                 ChessPosition position = new ChessPosition(r, c);
-                if(enemyAttackignKing(position, teamColor, king)){
+                if(enemyAttackingKing(position, teamColor, king, board)){
                     return true;
                 }
             }
         }
         return false;
     }
-    public boolean enemyAttackignKing(ChessPosition position, TeamColor teamColor, ChessPosition king){
+    public boolean enemyAttackingKing(ChessPosition position, TeamColor teamColor, ChessPosition king, ChessBoard board){
         ChessPiece piece = board.getPiece(position);
         if(piece == null || piece.getTeamColor() == teamColor){
             return false;
@@ -173,15 +173,22 @@ public class ChessGame {
                     // make collection of valid moves for the piece
                     Collection<ChessMove> moves = validMoves(new ChessPosition(r, c));
                     // make a board to test on
-                    ChessGame newBoard = new ChessGame();
-                    for(ChessMove move : moves){
-                        newBoard.setBoard(board);
-                        newBoard.helpMove(move);
-                        if(!newBoard.isInCheck(teamColor)){
-                            return false;
-                        }
+                    if(!boardInCheck(moves, teamColor)){
+                        return false;
                     }
                 }
+            }
+        }
+        return true;
+    }
+
+    public boolean boardInCheck(Collection<ChessMove> moves, TeamColor teamColor){
+        ChessGame newBoard = new ChessGame();
+        for(ChessMove move : moves){
+            newBoard.setBoard(board);
+            newBoard.helpMove(move);
+            if(!newBoard.isInCheck(teamColor)){
+                return false;
             }
         }
         return true;
