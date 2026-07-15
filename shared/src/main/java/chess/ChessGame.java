@@ -221,7 +221,6 @@ public class ChessGame {
             }
         }
     }
-
     /**
      * Gets the current chessboard
      *
