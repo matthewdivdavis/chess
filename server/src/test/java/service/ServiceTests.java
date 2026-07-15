@@ -8,6 +8,7 @@ import passoff.model.TestCreateRequest;
 import passoff.model.TestUser;
 import passoff.server.TestServerFacade;
 import server.LoginRequest;
+import server.LogoutRequest;
 import server.RegisterRequest;
 import server.Server;
 
@@ -140,6 +141,33 @@ public class ServiceTests {
         }
     }
     // LOGOUT
+    @Test
+    @Order(9)
+    @DisplayName("Logout Normal")
+    public void logoutNorm(){
+        // test setup
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
+        RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
+        // actual test
+        LogoutRequest request = new LogoutRequest(result.authToken());
+        Assertions.assertDoesNotThrow(() -> userService.logout(request));
+
+    }
+    @Test
+    @Order(10)
+    @DisplayName("Bad AuthToken")
+    public void logoutBadAuth(){
+// test setup
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
+        RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
+        // actual test
+        LogoutRequest request = new LogoutRequest("BadAuthTokenLol");
+        Assertions.assertThrows(DataAccessException.class, () ->{
+            userService.logout(request);
+        });
+    }
     // CREATE
     // LIST
     // JOIN
