@@ -30,4 +30,7 @@ public class MemoryGameDAO {
     public int createID(){
         return ID++;
     }
+    public void clear(){
+        games.clear();
+    }
 }

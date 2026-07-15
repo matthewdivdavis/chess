@@ -27,4 +27,7 @@ public class MemoryAuthDAO {
             }
         }
     }
+    public void clear(){
+        auths.clear();
+    }
 }

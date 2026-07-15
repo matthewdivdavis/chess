@@ -37,4 +37,7 @@ public class MemoryUserDAO {
             }
         }
     }
+    public void clear(){
+        users.clear();
+    }
 }

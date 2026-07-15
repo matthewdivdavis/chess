@@ -20,6 +20,10 @@ public class UserService{
         gameMem = new MemoryGameDAO();
     }
     public RegisterResult register(RegisterRequest request) throws DataAccessException{
+        // check to make sure user and pass are given
+        if(request.username() == null || request.password() == null){
+            throw new NoUsernameException("username or password empty");
+        }
         // Check to see if username is taken
         if(userMem.getUser(request.username()) != null){
             throw new DataAccessException("username already taken");
@@ -34,8 +38,12 @@ public class UserService{
     }
 
     public LoginResult login(LoginRequest request) throws DataAccessException{
+        // check username was given
+        if(request.username() == null || request.password() == null){
+            throw new NoUsernameException("username or password empty");
+        }
         // check username exists
-        if(userMem.getUser(request.username()) == null){
+        else if(userMem.getUser(request.username()) == null){
             throw new DataAccessException("username could not be found");
         }
         // check password is right
@@ -75,5 +83,11 @@ public class UserService{
             System.out.println(new GameResult(gameMem.at(i)));
         }
         return result;
+    }
+
+    public void clear(){
+        userMem.clear();
+        authMem.clear();
+        gameMem.clear();
     }
 }

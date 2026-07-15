@@ -2,6 +2,7 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.NoUsernameException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.*;
@@ -22,6 +23,12 @@ public class RegisterHandler implements Handler {
         try{
             RegisterResult result = userService.register(registerRequest);
             ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
+        } catch (NoUsernameException e){
+            ctx.status(400);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
             ctx.contentType("application/json");
         } catch (DataAccessException e) {
             ctx.status(403);

@@ -26,7 +26,8 @@ public class ListHandler implements Handler {
         System.out.println("Request: "+request);
         Gson gson = new Gson();
         try{
-            ArrayList<GameResult> result = userService.list(request);
+            ArrayList<GameResult> games = userService.list(request);
+            ListGamesResult result = new ListGamesResult(games);
             ctx.result(gson.toJson(result));
             ctx.contentType("application/json");
         } catch (DataAccessException e){
