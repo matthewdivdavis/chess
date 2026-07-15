@@ -7,10 +7,7 @@ import passoff.model.TestAuthResult;
 import passoff.model.TestCreateRequest;
 import passoff.model.TestUser;
 import passoff.server.TestServerFacade;
-import server.LoginRequest;
-import server.LogoutRequest;
-import server.RegisterRequest;
-import server.Server;
+import server.*;
 
 public class ServiceTests {
     private static TestUser existingUser;
@@ -158,7 +155,7 @@ public class ServiceTests {
     @Order(10)
     @DisplayName("Bad AuthToken")
     public void logoutBadAuth(){
-// test setup
+        // test setup
         UserService userService = new UserService();
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
         RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
@@ -169,6 +166,47 @@ public class ServiceTests {
         });
     }
     // CREATE
+    @Test
+    @Order(11)
+    @DisplayName("Create Normal")
+    public void createNorm(){
+        // test setup
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
+        RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
+        // actual test
+        CreateRequest request = new CreateRequest(result.authToken(), "GameName bababooy");
+        Assertions.assertDoesNotThrow(() -> userService.create(request));
+    }
+    @Test
+    @Order(12)
+    @DisplayName("Create: Bad AuthToken")
+    public void createBadAuth(){
+        // test setup
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
+        RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
+        // actual test
+        CreateRequest request = new CreateRequest("pwease make me a game senpai", "GameName bababooy");
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            userService.create(request);
+        });
+    }
+    @Test
+    @Order(13)
+    @DisplayName("Create: gameName null")
+    public void createNoName(){
+        // test setup
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "urcool@gmail.com");
+        RegisterResult result = Assertions.assertDoesNotThrow(() -> userService.register(registerRequest));
+        // actual test
+        CreateRequest request = new CreateRequest(result.authToken(), null);
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            userService.create(request);
+        });
+    }
+
     // LIST
     // JOIN
     // CLEAR
