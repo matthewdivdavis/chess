@@ -88,6 +88,56 @@ public class ServiceTests {
             throw new RuntimeException(e);
         }
     }
+    @Test
+    @Order(5)
+    @DisplayName("Username not found")
+    public void loginNotFound(){
+        String username = "username";
+        LoginRequest request = new LoginRequest(username, "password");
+        UserService userService = new UserService();
+        Assertions.assertThrows(DataAccessException.class, ()->{
+            userService.login(request);
+        });
+    }
+    @Test
+    @Order(6)
+    @DisplayName("Username null")
+    public void loginUsernameNull(){
+        String username = "username";
+        LoginRequest request = new LoginRequest(null, "password");
+        UserService userService = new UserService();
+        Assertions.assertThrows(DataAccessException.class, ()->{
+            userService.login(request);
+        });
+    }
+    @Test
+    @Order(7)
+    @DisplayName("Password null")
+    public void loginPasswordNull(){
+        String username = "username";
+        LoginRequest request = new LoginRequest(username, null);
+        UserService userService = new UserService();
+        Assertions.assertThrows(DataAccessException.class, ()->{
+            userService.login(request);
+        });
+    }
+    @Order(8)
+    @DisplayName("Incorrect Password")
+    public void loginPasswordWrong(){
+        String newUser = "username";
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest(newUser, "password", "urcool@gmail.com");
+        LoginRequest request = new LoginRequest(newUser, "password1");
+        try {
+            RegisterResult registerResult = userService.register(registerRequest);
+            Assertions.assertThrows(DataAccessException.class, () ->{
+                userService.login(request);
+            });
+        }
+        catch (DataAccessException e){
+            throw new RuntimeException(e);
+        }
+    }
     // LOGOUT
     // CREATE
     // LIST
