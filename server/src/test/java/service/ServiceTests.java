@@ -1,10 +1,13 @@
 package service;
 import dataaccess.DataAccessException;
+import dataaccess.MissingDataException;
 import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
+import passoff.model.TestAuthResult;
 import passoff.model.TestCreateRequest;
 import passoff.model.TestUser;
 import passoff.server.TestServerFacade;
+import server.LoginRequest;
 import server.RegisterRequest;
 import server.Server;
 
@@ -22,6 +25,7 @@ public class ServiceTests {
     @Order(1)
     @DisplayName("Register test (normal)")
     public void registerTestNorm(){
+        // regular test
         String newUser = "username";
         RegisterRequest request = new RegisterRequest(newUser, "password", "urcool@gmail.com");
         UserService userService = new UserService();
@@ -35,8 +39,55 @@ public class ServiceTests {
             throw new RuntimeException(e);
         }
     }
+    @Test
+    @Order(2)
+    @DisplayName("Register test (bad)")
+    public void registerTestBad(){
+        // duplicate username
+        String username = "username";
+        RegisterRequest request = new RegisterRequest(username, "password", "urcool@gmail.com");
+        UserService userService = new UserService();
 
+        Assertions.assertDoesNotThrow(() -> userService.register(request));
+
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            userService.register(request);
+        });
+    }
+    @Test
+    @Order(3)
+    @DisplayName("Register test (bad)")
+    public void registerTestNoPassword(){
+        // Password is null
+        String username = "username1";
+        RegisterRequest request = new RegisterRequest(username, null, "urcool@gmail.com");
+        UserService userService = new UserService();
+
+        Assertions.assertThrows(MissingDataException.class, () -> {
+            userService.register(request);
+        });
+    }
     // LOGIN
+    @Test
+    @Order(4)
+    @DisplayName("Login normal")
+    public void loginTest(){
+        String newUser = "username";
+        UserService userService = new UserService();
+        RegisterRequest registerRequest = new RegisterRequest(newUser, "password", "urcool@gmail.com");
+        LoginRequest request = new LoginRequest(newUser, "password");
+
+        try {
+            RegisterResult registerResult = userService.register(registerRequest);
+            LoginResult result = userService.login(request);
+            Assertions.assertEquals(newUser, result.username(),
+                    "Response did not have the same username as was registered");
+            Assertions.assertNotNull(result.authToken(), "Response did not have an authToken");
+        }
+        catch (DataAccessException e){
+            throw new RuntimeException(e);
+        }
+    }
     // LOGOUT
     // CREATE
     // LIST
