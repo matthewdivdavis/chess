@@ -121,6 +121,7 @@ public class ServiceTests {
             userService.login(request);
         });
     }
+    @Test
     @Order(8)
     @DisplayName("Incorrect Password")
     public void loginPasswordWrong(){
