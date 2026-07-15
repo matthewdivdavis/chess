@@ -22,27 +22,20 @@ public class CreateHandler implements Handler {
     @Override
     public void handle(Context ctx){
         String authTok = ctx.header("authorization");
-
         Gson gson = new Gson();
         GameRequest reqname = gson.fromJson(ctx.body(), GameRequest.class);
         CreateRequest request = new CreateRequest(authTok, reqname.gameName());
-
         try{
             CreateResult result = userService.create(request);
-//            ctx.json(result.gameId());
             ctx.result(gson.toJson(result));
             ctx.contentType("application/json");
         } catch (MissingDataException e){
             ctx.status(400);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         }
     }

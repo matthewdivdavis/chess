@@ -33,21 +33,15 @@ public class JoinHandler implements Handler {
             ctx.contentType("application/json");
         } catch (NameTakenException e){
             ctx.status(403);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         } catch (MissingDataException e){
             ctx.status(400);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         }
     }
