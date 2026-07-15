@@ -15,5 +15,6 @@ public class ClearHandler implements Handler {
     @Override
     public void handle(Context ctx){
         userService.clear();
+        ctx.json("");
     }
 }

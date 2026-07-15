@@ -3,13 +3,12 @@ package server;
 import chess.ChessGame;
 import org.jetbrains.annotations.NotNull;
 
-public record JoinRequest(String authToken, ChessGame.TeamColor color, String gameID) {
+public record JoinRequest(String playerColor, int gameID) {
     @NotNull
     @Override
     public String toString() {
         return "JoinRequest:\n" +
-                "authToken='" + authToken + '\'' + '\n' +
-                "color='" + color.toString() + '\'' + '\n' +
+                "color='" + playerColor + '\'' + '\n' +
                 "gameID='" + gameID + '\'';
     }
 }

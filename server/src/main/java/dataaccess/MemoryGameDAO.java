@@ -13,6 +13,7 @@ public class MemoryGameDAO {
     public void addGame(GameData game){
         games.add(game);
     }
+
     public GameData getGame(int gameID){
         for(GameData g : games){
             if(g.getGameID() == gameID){

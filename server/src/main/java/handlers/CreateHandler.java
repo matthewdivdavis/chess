@@ -3,6 +3,7 @@ package handlers;
 import com.google.gson.Gson;
 import dataaccess.CreateRequest;
 import dataaccess.DataAccessException;
+import dataaccess.MissingDataException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.GameRequest;
@@ -24,12 +25,17 @@ public class CreateHandler implements Handler {
 
         Gson gson = new Gson();
         GameRequest reqname = gson.fromJson(ctx.body(), GameRequest.class);
-        System.out.println(reqname.gameName());
         CreateRequest request = new CreateRequest(authTok, reqname.gameName());
 
         try{
             CreateResult result = userService.create(request);
             ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
+        } catch (MissingDataException e){
+            ctx.status(400);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
             ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);
