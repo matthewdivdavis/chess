@@ -2,17 +2,22 @@ package service;
 
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import server.*;
 
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class UserService{
     MemoryUserDAO userMem;
     MemoryAuthDAO authMem;
+    MemoryGameDAO gameMem;
     public UserService(){
         userMem = new MemoryUserDAO();
         authMem = new MemoryAuthDAO();
+        gameMem = new MemoryGameDAO();
     }
     public RegisterResult register(RegisterRequest request) throws DataAccessException{
         // Check to see if username is taken
@@ -48,5 +53,27 @@ public class UserService{
         }
         authMem.remove(request.authToken());
         return null;
+    }
+
+    public CreateResult create(CreateRequest request) throws DataAccessException{
+        if(authMem.getAuth(request.authToken()) == null){
+            throw new DataAccessException("unauthorized");
+        }
+        GameData game = new GameData(gameMem.createID());
+        game.setGameName(request.gameName());
+        gameMem.addGame(game);
+        return new CreateResult(game.getGameID());
+    }
+
+    public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
+        if(authMem.getAuth(request.authToken()) == null){
+            throw new DataAccessException("unauthorized");
+        }
+        ArrayList<GameResult> result = new ArrayList<>();
+        for(int i = 0; i < gameMem.size(); i++){
+            result.add(new GameResult(gameMem.at(i)));
+            System.out.println(new GameResult(gameMem.at(i)));
+        }
+        return result;
     }
 }

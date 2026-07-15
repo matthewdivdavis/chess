@@ -10,7 +10,7 @@ import service.*;
 import java.util.Map;
 
 public class RegisterHandler implements Handler {
-    UserService userService;
+    private final UserService userService;
     public RegisterHandler(UserService userService){
         this.userService = userService;
     }

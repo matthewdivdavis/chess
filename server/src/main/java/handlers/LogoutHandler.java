@@ -11,7 +11,7 @@ import service.UserService;
 import java.util.Map;
 
 public class LogoutHandler implements Handler{
-    UserService userService;
+    private final UserService userService;
 
     public LogoutHandler(UserService userService){
         this.userService = userService;

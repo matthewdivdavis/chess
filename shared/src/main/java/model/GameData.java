@@ -7,11 +7,23 @@ public class GameData {
     private String blackUsername;
     private String whiteUsername;
     private String gameName;
-    private ChessGame game;
+    private final ChessGame game;
 
-    public GameData(int gameID) {
-        // I might want to randomly generate the gameID. I'm not sure.
-        this.gameID = gameID;
+    public GameData(int ID) {
+        this.gameID = ID;
+        game = new ChessGame();
+    }
+
+    public void setBlackUsername(String username){
+        blackUsername = username;
+    }
+
+    public void setWhiteUsername(String username) {
+        whiteUsername = username;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
     }
 
     public int getGameID(){
@@ -27,7 +39,14 @@ public class GameData {
         return gameName;
     }
     public ChessGame getGame(){
-        return game; 
+        return game;
     }
 
+    @Override
+    public String toString() {
+        return "gameID:" + gameID +
+                ", blackUsername:'" + blackUsername + '\'' +
+                ", whiteUsername:'" + whiteUsername + '\'' +
+                ", gameName:'" + gameName + '\'';
+    }
 }

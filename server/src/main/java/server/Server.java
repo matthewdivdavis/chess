@@ -19,8 +19,8 @@ public class Server {
         javalin.post("/user", new RegisterHandler(userService));
         javalin.post("/session", new LoginHandler(userService));
         javalin.delete("/session", new LogoutHandler(userService));
-//        javalin.get("/game", new ListHandler(userService));
-//        javalin.post("/game", new CreateHandler(userService));
+        javalin.get("/game", new ListHandler(userService));
+        javalin.post("/game", new CreateHandler(userService));
 //        javalin.put("/game", new JoinHandler(userService));
 //        javalin.delete("/db", new ClearHandler(userService));
 
