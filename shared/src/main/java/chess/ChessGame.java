@@ -90,65 +90,7 @@ public class ChessGame {
                 }
             }
         }
-//        for(ChessMove move : castle(startPosition)){
-//            System.out.println("In 'castle' function");
-//            valid.add(move);
-//        }
 
-        return valid;
-    }
-    public Collection<ChessMove> castle(ChessPosition startPosition){
-        Collection<ChessMove> valid = new ArrayList<>();
-        // BLACK CASTLE RIGHT
-        if(board.getPiece(startPosition) != null
-                &&board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING
-                && board.getPiece(startPosition).getTeamColor() == TeamColor.BLACK
-                && !blackCastle
-                && board.getPiece(new ChessPosition(8, 8)) != null
-                && board.getPiece(new ChessPosition(8, 8)).getTeamColor()== TeamColor.BLACK
-                && board.getPiece(new ChessPosition(8, 8)).getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(8, 7)) == null
-                && board.getPiece(new ChessPosition(8, 6)) == null){
-            valid.add(new ChessMove(startPosition, new ChessPosition(8 , 7), ChessPiece.PieceType.KING));
-        }
-        // BLACK CASTE LEFT
-        if(board.getPiece(startPosition) != null
-                && board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING
-                && board.getPiece(startPosition).getTeamColor() == TeamColor.BLACK
-                && !blackCastle
-                && board.getPiece(new ChessPosition(8, 1)) != null
-                && board.getPiece(new ChessPosition(8, 1)).getTeamColor()== TeamColor.BLACK
-                && board.getPiece(new ChessPosition(8, 1)).getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(8, 2)) == null
-                && board.getPiece(new ChessPosition(8, 3)) == null
-                && board.getPiece(new ChessPosition(8, 4)) == null){
-            valid.add(new ChessMove(startPosition, new ChessPosition(8 , 3), ChessPiece.PieceType.KING));
-        }
-        // WHITE CASTLE RIGHT
-        if(board.getPiece(startPosition) != null
-                &&board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING
-                && board.getPiece(startPosition).getTeamColor() == TeamColor.WHITE
-                && !whiteCaste
-                && board.getPiece(new ChessPosition(1, 8)) != null
-                && board.getPiece(new ChessPosition(1, 8)).getTeamColor()== TeamColor.WHITE
-                && board.getPiece(new ChessPosition(1, 8)).getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(1, 7)) == null
-                && board.getPiece(new ChessPosition(1, 6)) == null){
-            valid.add(new ChessMove(startPosition, new ChessPosition(1 , 7), ChessPiece.PieceType.KING));
-        }
-        // WHITE CASTE LEFT
-        if(board.getPiece(startPosition) != null
-                &&board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING
-                && board.getPiece(startPosition).getTeamColor() == TeamColor.WHITE
-                && !whiteCaste
-                && board.getPiece(new ChessPosition(1, 1)) != null
-                && board.getPiece(new ChessPosition(1, 1)).getTeamColor()== TeamColor.WHITE
-                && board.getPiece(new ChessPosition(1, 1)).getPieceType() == ChessPiece.PieceType.ROOK
-                && board.getPiece(new ChessPosition(1, 2)) == null
-                && board.getPiece(new ChessPosition(1, 3)) == null
-                && board.getPiece(new ChessPosition(1, 4)) == null){
-            valid.add(new ChessMove(startPosition, new ChessPosition(1 , 3), ChessPiece.PieceType.KING));
-        }
         return valid;
     }
     /**

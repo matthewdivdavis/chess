@@ -77,6 +77,7 @@ public class ChessPiece {
 
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> moves = new ArrayList<>();
+
         if(piece.getPieceType() == PieceType.BISHOP){
             int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
             for (int[] dir : directions) {
@@ -199,7 +200,9 @@ public class ChessPiece {
                     moves.add(new ChessMove(myPosition, new ChessPosition(r - 2, c), null));
                     moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), null));
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c), null));
+                }
             }
 
             // case 2: pawn capture (left)
@@ -212,7 +215,9 @@ public class ChessPiece {
                         }
                     }
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c - 1), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c - 1), null));
+                }
             }
             // case 3: pawn capture (right)
             if (c != 8 && board.getPiece(new ChessPosition(r-1, c+1)) != null
@@ -224,7 +229,9 @@ public class ChessPiece {
                         }
                     }
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c + 1), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r - 1, c + 1), null));
+                }
             }
         }
 
@@ -247,7 +254,9 @@ public class ChessPiece {
                     moves.add(new ChessMove(myPosition, new ChessPosition(r + 2, c), null));
                     moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c), null));
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c), null));
+                }
             }
 
             // case 2: pawn capture (left)
@@ -260,7 +269,9 @@ public class ChessPiece {
                         }
                     }
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c - 1), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c - 1), null));
+                }
             }
             // case 3: pawn capture (right)
             if (c != 8 && board.getPiece(new ChessPosition(r+1, c+1)) != null
@@ -272,7 +283,9 @@ public class ChessPiece {
                         }
                     }
                 }
-                else moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c + 1), null));
+                else {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(r + 1, c + 1), null));
+                }
             }
         }
         return moves;

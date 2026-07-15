@@ -7,7 +7,7 @@ import java.util.List;
 
 public class MemoryGameDAO {
     private final List<GameData> games = new ArrayList<>();
-    private int ID = 1;
+    private int iD = 1;
 
     public void addGame(GameData game){
         games.add(game);
@@ -28,7 +28,7 @@ public class MemoryGameDAO {
         return games.get(i);
     }
     public int createID(){
-        return ID++;
+        return iD++;
     }
     public void clear(){
         games.clear();

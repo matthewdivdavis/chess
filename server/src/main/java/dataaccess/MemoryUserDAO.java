@@ -15,7 +15,9 @@ public class MemoryUserDAO {
 
     public UserData getUser(String username){
         for(UserData user : users){
-            if(username.equals(user.username())) return user;
+            if(username.equals(user.username())){
+                return user;
+            }
         }
         return null;
     }

@@ -3,14 +3,14 @@ package model;
 import chess.ChessGame;
 
 public class GameData {
-    private final int gameID;
+    private final int gameId;
     private String blackUsername;
     private String whiteUsername;
     private String gameName;
     private final ChessGame game;
 
-    public GameData(int ID) {
-        this.gameID = ID;
+    public GameData(int Id) {
+        this.gameId = Id;
         game = new ChessGame();
     }
 
@@ -27,7 +27,7 @@ public class GameData {
     }
 
     public int getGameID(){
-        return gameID;
+        return gameId;
     }
     public String getBlackUsername(){
         return blackUsername;
@@ -44,7 +44,7 @@ public class GameData {
 
     @Override
     public String toString() {
-        return "gameID:" + gameID +
+        return "gameID:" + gameId +
                 ", blackUsername:'" + blackUsername + '\'' +
                 ", whiteUsername:'" + whiteUsername + '\'' +
                 ", gameName:'" + gameName + '\'';

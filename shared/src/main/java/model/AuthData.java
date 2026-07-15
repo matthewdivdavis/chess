@@ -3,15 +3,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class AuthData {
-    private String username;
-    private String authToken;
+    private final String username;
+    private final String authToken;
 
     public AuthData(String username){
-        this.username = username;
-        this.authToken = generateToken();
-    }
-
-    public void setUsername(String username){
         this.username = username;
         this.authToken = generateToken();
     }
