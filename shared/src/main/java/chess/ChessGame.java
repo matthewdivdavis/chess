@@ -105,14 +105,22 @@ public class ChessGame {
         ChessPosition king = board.getKing(teamColor);
         for(int r = 1; r <= 8; r++){
             for(int c = 1; c <= 8; c++){
-                if(board.getPiece(new ChessPosition(r, c)) != null
-                        && board.getPiece(new ChessPosition(r, c)).getTeamColor() != teamColor){
-                    for(ChessMove move : board.getPiece(new ChessPosition(r, c)).pieceMoves(board, new ChessPosition(r, c))){
-                        if(move.getEndPosition().equals(king)){
-                            return true;
-                        }
-                    }
+                ChessPosition position = new ChessPosition(r, c);
+                if(enemyAttackignKing(position, teamColor, king)){
+                    return true;
                 }
+            }
+        }
+        return false;
+    }
+    public boolean enemyAttackignKing(ChessPosition position, TeamColor teamColor, ChessPosition king){
+        ChessPiece piece = board.getPiece(position);
+        if(piece == null || piece.getTeamColor() == teamColor){
+            return false;
+        }
+        for(ChessMove move : piece.pieceMoves(board, position)){
+            if(move.getEndPosition().equals(king)){
+                return true;
             }
         }
         return false;
