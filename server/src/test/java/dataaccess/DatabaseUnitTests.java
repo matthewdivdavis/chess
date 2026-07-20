@@ -1,7 +1,5 @@
-package dataAccess;
+package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
 import org.junit.jupiter.api.*;
 import server.*;
 import service.*;
