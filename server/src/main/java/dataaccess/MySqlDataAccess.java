@@ -73,9 +73,7 @@ public class MySqlDataAccess implements DataAccess{
                 ps.setString(1, username);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
-                        if(BCrypt.checkpw(password, readUser(rs).password())){
-                            return true;
-                        }
+                        return BCrypt.checkpw(password, readUser(rs).password());
                     }
                 }
             }

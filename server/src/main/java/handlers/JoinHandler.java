@@ -6,19 +6,16 @@ import dataaccess.MissingDataException;
 import dataaccess.NameTakenException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import org.eclipse.jetty.server.Authentication;
-import server.GameRequest;
 import server.JoinRequest;
-import service.CreateResult;
 import service.JoinResult;
-import service.UserService;
+import service.JoinService;
 
 import java.util.Map;
 
 public class JoinHandler implements Handler {
-    private final UserService userService;
+    private final JoinService userService;
 
-    public JoinHandler(UserService userService){
+    public JoinHandler(JoinService userService){
         this.userService = userService;
     }
 

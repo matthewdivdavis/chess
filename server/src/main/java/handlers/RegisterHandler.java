@@ -11,8 +11,8 @@ import service.*;
 import java.util.Map;
 
 public class RegisterHandler implements Handler {
-    private final UserService userService;
-    public RegisterHandler(UserService userService){
+    private final RegisterService userService;
+    public RegisterHandler(RegisterService userService){
         this.userService = userService;
     }
 

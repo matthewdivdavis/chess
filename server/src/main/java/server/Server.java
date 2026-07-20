@@ -18,15 +18,15 @@ public class Server {
 
 
         // Register your endpoints and exception handlers here.
-        javalin.post("/user", new SQLRegisterHandler(userService));
-        javalin.post("/session", new SQLLoginHandler(userService));
-        javalin.delete("/session", new SQLLogoutHandler(userService));
-
-        javalin.post("/game", new SQLCreateHandler(userService));
-
-        javalin.get("/game", new SQLListHandler(userService));
-        javalin.put("/game", new SQLJoinHandler(userService));
-        javalin.delete("/db", new SQLClearHandler(userService));
+        javalin.post("/user", new RegisterHandler(userService));
+        javalin.post("/session", new LoginHandler(userService));
+        javalin.delete("/session", new LogoutHandler(userService));
+//
+        javalin.post("/game", new CreateHandler(userService));
+//
+        javalin.get("/game", new ListHandler(userService));
+        javalin.put("/game", new JoinHandler(userService));
+        javalin.delete("/db", new ClearHandler(userService));
 
     }
 

@@ -11,8 +11,8 @@ import service.*;
 import java.util.Map;
 
 public class LoginHandler implements Handler{
-    private final UserService userService;
-    public LoginHandler(UserService userService){
+    private final LoginService userService;
+    public LoginHandler(LoginService userService){
         this.userService = userService;
     }
 

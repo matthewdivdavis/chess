@@ -12,9 +12,9 @@ import service.*;
 import java.util.Map;
 
 public class CreateHandler implements Handler {
-    private final UserService userService;
+    private final CreateService userService;
 
-    public CreateHandler(UserService userService){
+    public CreateHandler(CreateService userService){
         this.userService = userService;
     }
 

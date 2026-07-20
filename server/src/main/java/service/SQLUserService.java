@@ -2,16 +2,16 @@ package service;
 
 import dataaccess.*;
 import exception.ResponseException;
-import kotlin.jvm.internal.ShortSpreadBuilder;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import server.*;
 
 import java.util.ArrayList;
 
-public class SQLUserService{
+public class SQLUserService implements ClearService,
+        CreateService, LoginService, RegisterService,
+        JoinService, ListService, LogoutService{
     MySqlDataAccess sqlDataAccess;
 
     public SQLUserService(){
@@ -23,6 +23,7 @@ public class SQLUserService{
         }
 
     }
+    @Override
     public RegisterResult register(RegisterRequest request) throws DataAccessException{
         // check to make sure user and pass are given
         if(request.username() == null || request.password() == null){
@@ -44,6 +45,7 @@ public class SQLUserService{
         }
     }
 
+    @Override
     public LoginResult login(LoginRequest request) throws DataAccessException{
         // check username was given
         if(request.username() == null || request.password() == null){
@@ -66,7 +68,7 @@ public class SQLUserService{
         }
 
     }
-
+    @Override
     public LogoutResult logout(LogoutRequest request) throws DataAccessException{
         try{
             if(sqlDataAccess.getAuth(request.authToken()) == null){
@@ -82,6 +84,7 @@ public class SQLUserService{
         }
     }
 
+    @Override
     public CreateResult create(CreateRequest request) throws DataAccessException{
         if(request.gameName() == null){
             throw new MissingDataException("no game name");
@@ -96,7 +99,7 @@ public class SQLUserService{
             throw new RuntimeException(e);
         }
     }
-
+    @Override
     public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
         try{
             if(sqlDataAccess.getAuth(request.authToken()) == null){
@@ -116,7 +119,7 @@ public class SQLUserService{
             throw new RuntimeException(e);
         }
     }
-
+    @Override
     public JoinResult join(String authToken, JoinRequest request) throws DataAccessException, MissingDataException{
         if(request.playerColor() == null){
             throw new MissingDataException("request.color == null");
@@ -156,6 +159,7 @@ public class SQLUserService{
         return new JoinResult(request.playerColor(), request.gameID());
     }
 
+    @Override
     public void clear(){
         try{
             sqlDataAccess.clearDatabase();

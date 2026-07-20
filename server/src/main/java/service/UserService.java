@@ -9,23 +9,19 @@ import server.*;
 
 import java.util.ArrayList;
 
-public class UserService{
+public class UserService implements ClearService,
+        CreateService, LoginService, JoinService,
+        ListService, LogoutService, RegisterService{
     MemoryUserDAO userMem;
     MemoryAuthDAO authMem;
     MemoryGameDAO gameMem;
-    MySqlDataAccess sqlDataAccess;
     public UserService(){
         userMem = new MemoryUserDAO();
         authMem = new MemoryAuthDAO();
         gameMem = new MemoryGameDAO();
-        try{
-            sqlDataAccess = new MySqlDataAccess();
-        }
-        catch (ResponseException | DataAccessException e){
-            throw new RuntimeException(e);
-        }
 
     }
+    @Override
     public RegisterResult register(RegisterRequest request) throws DataAccessException{
         // check to make sure user and pass are given
         if(request.username() == null || request.password() == null){
@@ -36,12 +32,6 @@ public class UserService{
             throw new DataAccessException("username already taken");
         }
         // add user data
-        try{
-            sqlDataAccess.addUser(new UserData(request.username(), request.password(), request.email()));
-            sqlDataAccess.addAuth(new AuthData(request.username()));
-        } catch (ResponseException e) {
-            throw new DataAccessException(e.toString());
-        }
         userMem.addUser(UserDAO.createUser(request.username(), request.password(), request.email()));
         // create AuthData
         AuthData auth = AuthDAO.createAuth(request.username());
@@ -50,6 +40,7 @@ public class UserService{
         return new RegisterResult(request.username(), auth.getAuthToken());
     }
 
+    @Override
     public LoginResult login(LoginRequest request) throws DataAccessException{
         // check username was given
         if(request.username() == null || request.password() == null){
@@ -67,7 +58,7 @@ public class UserService{
         authMem.addAuth(auth);
         return new LoginResult(request.username(), auth.getAuthToken());
     }
-
+    @Override
     public LogoutResult logout(LogoutRequest request) throws DataAccessException{
         if(authMem.getAuth(request.authToken()) == null){
             throw new DataAccessException("unauthorized");
@@ -76,6 +67,7 @@ public class UserService{
         return null;
     }
 
+    @Override
     public CreateResult create(CreateRequest request) throws DataAccessException{
         if(request.gameName() == null){
             throw new MissingDataException("no game name");
@@ -89,6 +81,7 @@ public class UserService{
         return new CreateResult(game.getGameID());
     }
 
+    @Override
     public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
         if(authMem.getAuth(request.authToken()) == null){
             throw new DataAccessException("unauthorized");
@@ -101,7 +94,7 @@ public class UserService{
         }
         return result;
     }
-
+    @Override
     public JoinResult join(String authToken, JoinRequest request) throws DataAccessException{
         if(authMem.getAuth(authToken) == null){
             throw new DataAccessException("unauthorized");
@@ -133,15 +126,10 @@ public class UserService{
         }
         return new JoinResult(request.playerColor(), request.gameID());
     }
-
+    @Override
     public void clear(){
         userMem.clear();
         authMem.clear();
         gameMem.clear();
-        try{
-            sqlDataAccess.clearDatabase();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

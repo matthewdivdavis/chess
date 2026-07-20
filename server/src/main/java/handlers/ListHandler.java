@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ListHandler implements Handler {
-    private final UserService userService;
+    private final ListService userService;
 
-    public ListHandler(UserService userService){
+    public ListHandler(ListService userService){
         this.userService = userService;
     }
 

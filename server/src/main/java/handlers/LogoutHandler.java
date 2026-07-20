@@ -6,14 +6,15 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.LogoutRequest;
 import service.LogoutResult;
+import service.LogoutService;
 import service.UserService;
 
 import java.util.Map;
 
 public class LogoutHandler implements Handler{
-    private final UserService userService;
+    private final LogoutService userService;
 
-    public LogoutHandler(UserService userService){
+    public LogoutHandler(LogoutService userService){
         this.userService = userService;
     }
 
