@@ -1,4 +1,4 @@
-package DataAccess;
+package dataAccess;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
