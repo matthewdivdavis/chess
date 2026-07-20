@@ -24,8 +24,8 @@ public class Server {
 
         javalin.post("/game", new SQLCreateHandler(userService));
 
-//        javalin.get("/game", new SQLListHandler(userService));
-//        javalin.put("/game", new SQLJoinHandler(userService));
+        javalin.get("/game", new SQLListHandler(userService));
+        javalin.put("/game", new SQLJoinHandler(userService));
         javalin.delete("/db", new SQLClearHandler(userService));
 
     }
@@ -34,7 +34,6 @@ public class Server {
         javalin.start(desiredPort);
         return javalin.port();
     }
-
     public void stop() {
         javalin.stop();
     }

@@ -14,9 +14,9 @@ import service.UserService;
 import java.util.Map;
 
 public class SQLJoinHandler implements Handler {
-    private final UserService userService;
+    private final SQLUserService userService;
 
-    public SQLJoinHandler(UserService userService){
+    public SQLJoinHandler(SQLUserService userService){
         this.userService = userService;
     }
 

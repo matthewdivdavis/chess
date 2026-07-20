@@ -4,10 +4,15 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 import org.eclipse.jetty.server.Authentication;
+import org.mindrot.jbcrypt.BCrypt;
 import service.SQLUserService;
 
 import javax.xml.crypto.Data;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MySqlDataAccess implements DataAccess{
 
@@ -68,7 +73,7 @@ public class MySqlDataAccess implements DataAccess{
                 ps.setString(1, username);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
-                        if(readUser(rs).password().equals(password)){
+                        if(BCrypt.checkpw(password, readUser(rs).password())){
                             return true;
                         }
                     }
@@ -83,7 +88,7 @@ public class MySqlDataAccess implements DataAccess{
 
     public AuthData getAuth(String authToken) throws ResponseException{
         try (Connection conn = DatabaseManager.getConnection()){
-            var statement = "SELECT username, authToken FROM authorization WHERE username=?";
+            var statement = "SELECT username, authToken FROM authorization WHERE authToken=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
                 ps.setString(1, authToken);
                 try(ResultSet rs = ps.executeQuery()){
@@ -99,10 +104,37 @@ public class MySqlDataAccess implements DataAccess{
         return null;
     }
 
+    public void setBlack(int gameId, String authToken){
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gamedata SET blackUsername=? WHERE gameId=?";
+            try(PreparedStatement p = conn.prepareStatement(statement)){
+                p.setString(1, getAuth(authToken).getUsername());
+                p.setInt(2, gameId);
+                p.executeUpdate();
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setWhite(int gameId, String authToken){
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gamedata SET whiteUsername=? WHERE gameId=?";
+            try(PreparedStatement p = conn.prepareStatement(statement)){
+                p.setString(1, getAuth(authToken).getUsername());
+                p.setInt(2, gameId);
+                p.executeUpdate();
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public void remove(String authToken) throws ResponseException{
         try(Connection conn = DatabaseManager.getConnection()){
-            var statement = "DELTE FROM authorization WHERE authToken=?";
+            var statement = "DELETE FROM authorization WHERE authToken=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
+                ps.setString(1, authToken);
                 ps.executeUpdate();
             }
         } catch (Exception e) {
@@ -119,34 +151,37 @@ public class MySqlDataAccess implements DataAccess{
         }
     }
 
-    public int getGame(int gameID) throws ResponseException{
+    public GameData getGame(int gameID) throws ResponseException{
         try(Connection conn = DatabaseManager.getConnection()){
             var statement = "SELECT gameId, blackUsername, whiteUsername, gameName, gameJson FROM gamedata WHERE gameId=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
                 ps.setInt(1, gameID);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
-                        return rs.getInt(1);
+                        return readGame(rs);
                     }
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return 0;
+        return null;
     }
 
-    private int executeGameUpdate(String statement, String gameName) throws ResponseException{
-        try(Connection conn = DatabaseManager.getConnection()){
-            try(PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, gameName);
-                ps.executeUpdate();
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    int gameID = rs.getInt(1);
-                    return gameID;
+    private int executeGameUpdate(String statement, String gameName) throws ResponseException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement p = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+                p.setString(1, gameName);
+                p.executeUpdate();
+                try (ResultSet rs = p.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    } else {
+                        throw new SQLException("No key generated");
+                    }
                 }
             }
-        } catch (SQLException e){
+        }catch (SQLException e) {
             throw new ResponseException(ResponseException.Code.ServerError,
                     String.format("unable to update database: %s, %s", statement, e.getMessage()));
         } catch (DataAccessException e) {
@@ -159,16 +194,41 @@ public class MySqlDataAccess implements DataAccess{
     }
 
     private GameData readGame(ResultSet rs) throws SQLException{
-        return new GameData(rs.getInt("gameId"));
+        GameData gameData = new GameData(rs.getInt("gameId"));
+        if(rs.getString("blackUsername") != null){
+            gameData.setBlackUsername(rs.getString("blackUsername"));
+        }
+        if(rs.getString("whiteUsername") != null){
+            gameData.setWhiteUsername(rs.getString("whiteUsername"));
+        }
+        if(rs.getString("gameName") != null){
+            gameData.setGameName(rs.getString("gameName"));
+        }
+        return gameData;
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException{
-        return new AuthData(rs.getString("username"));
+        AuthData authData = new AuthData(rs.getString("username"));
+        authData.setAuthToken(rs.getString("authToken"));
+        return authData;
     }
 
     public GameList listGames() throws ResponseException {
-
-        return null;
+        try(Connection conn = DatabaseManager.getConnection()){
+            GameList games = new GameList();
+            var statement = "SELECT * FROM gamedata";
+            try(PreparedStatement ps = conn.prepareStatement(statement)){
+                try(ResultSet rs = ps.executeQuery()){
+                    while(rs.next()){
+                        games.addGame(readGame(rs));
+                    }
+                    return games;
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(ResponseException.Code.ServerError,
+                    String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     private final String[] createStatements = {

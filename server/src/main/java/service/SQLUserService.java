@@ -6,6 +6,7 @@ import kotlin.jvm.internal.ShortSpreadBuilder;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.*;
 
 import java.util.ArrayList;
@@ -27,13 +28,14 @@ public class SQLUserService{
         if(request.username() == null || request.password() == null){
             throw new MissingDataException("username or password empty");
         }
+        String hashPass = BCrypt.hashpw(request.password(), BCrypt.gensalt());
         try{
             // Check to see if username is taken
             if(sqlDataAccess.getUser(request.username()) != null){
                 throw new DataAccessException("username already taken");
             }
             // add user data
-            sqlDataAccess.addUser(new UserData(request.username(), request.password(), request.email()));
+            sqlDataAccess.addUser(new UserData(request.username(), hashPass, request.email()));
             AuthData auth = new AuthData(request.username());
             sqlDataAccess.addAuth(auth);
             return new RegisterResult(request.username(), auth.getAuthToken());
@@ -70,6 +72,9 @@ public class SQLUserService{
             if(sqlDataAccess.getAuth(request.authToken()) == null){
                 throw new DataAccessException("unauthorized");
             }
+            if(!sqlDataAccess.getAuth(request.authToken()).getAuthToken().equals(request.authToken())){
+                throw new DataAccessException("token mismatch");
+            }
             sqlDataAccess.remove(request.authToken());
             return new LogoutResult(request.authToken());
         } catch (ResponseException e) {
@@ -92,60 +97,64 @@ public class SQLUserService{
         }
     }
 
-//    public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
-//        if(authMem.getAuth(request.authToken()) == null){
-//            throw new DataAccessException("unauthorized");
-//        }
-//
-//        ArrayList<GameResult> result = new ArrayList<>();
-//        for(int i = 0; i < gameMem.size(); i++){
-//            result.add(new GameResult(gameMem.at(i)));
-//            System.out.println(new GameResult(gameMem.at(i)));
-//        }
-//        return result;
-//    }
+    public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
+        try{
+            if(sqlDataAccess.getAuth(request.authToken()) == null){
+                throw new DataAccessException("unauthorized");
+            }
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        try{
+            GameList list = sqlDataAccess.listGames();
+            ArrayList<GameResult> result = new ArrayList<>();
+            for(int i = 0; i < list.size(); i++){
+                result.add(new GameResult(list.at(i)));
+            }
+            return result;
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-//    public JoinResult join(String authToken, JoinRequest request) throws DataAccessException{
-//        if(request.playerColor() == null){
-//            throw new MissingDataException("request.color == null");
-//        }
-//        if(!request.playerColor().equals("BLACK") && !request.playerColor().equals("WHITE")){
-//            throw new MissingDataException("color does not exist");
-//        }
-//        try{
-//            if(sqlDataAccess.getAuth(authToken) == null){
-//                throw new DataAccessException("unauthorized");
-//            }
-//            if(sqlDataAccess.getGame(request.gameID()) == 0){
-//                System.out.println("GameID = " + request.gameID());
-//                throw new MissingDataException("gameID not found");
-//            }
-//        } catch (ResponseException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        if(gameMem.getGame(request.gameID()) == null){
-//            System.out.println("GameID = " + request.gameID());
-//            throw new MissingDataException("gameID not found");
-//        }
-//
-//        if(request.playerColor().equals("BLACK")){
-//            if(gameMem.getGame(request.gameID()).getBlackUsername() == null){
-//                gameMem.getGame(request.gameID()).setBlackUsername(authMem.getAuth(authToken).getUsername());
-//            }
-//            else{
-//                throw new NameTakenException("color taken");
-//            }
-//        }else{
-//            if(gameMem.getGame(request.gameID()).getWhiteUsername() == null){
-//                gameMem.getGame(request.gameID()).setWhiteUsername(authMem.getAuth(authToken).getUsername());
-//            }
-//            else {
-//                throw new DataAccessException("color taken");
-//            }
-//        }
-//        return new JoinResult(request.playerColor(), request.gameID());
-//    }
+    public JoinResult join(String authToken, JoinRequest request) throws DataAccessException, MissingDataException{
+        if(request.playerColor() == null){
+            throw new MissingDataException("request.color == null");
+        }
+        if(!request.playerColor().equals("BLACK") && !request.playerColor().equals("WHITE")){
+            throw new MissingDataException("color does not exist");
+        }
+        try{
+            // bad auth
+            if(sqlDataAccess.getAuth(authToken) == null){
+                throw new DataAccessException("unauthorized");
+            }
+            // game ID doesn't exist
+            if(sqlDataAccess.getGame(request.gameID()) == null){
+                throw new MissingDataException("gameID not found");
+            }
+            if(request.playerColor().equals("BLACK")){
+                if(sqlDataAccess.getGame(request.gameID()).getBlackUsername() == null){
+                    sqlDataAccess.setBlack(request.gameID(), authToken);
+                    sqlDataAccess.getGame(request.gameID()).setBlackUsername(sqlDataAccess.getAuth(authToken).getUsername());
+                }
+                else{
+                    throw new NameTakenException("color 'BLACK' taken");
+                }
+            }else{
+                if(sqlDataAccess.getGame(request.gameID()).getWhiteUsername() == null){
+                    sqlDataAccess.setWhite(request.gameID(), authToken);
+
+                }
+                else {
+                    throw new DataAccessException("color 'WHITE' taken");
+                }
+            }
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
+        return new JoinResult(request.playerColor(), request.gameID());
+    }
 
     public void clear(){
         try{

@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class SQLListHandler implements Handler {
-    private final UserService userService;
+    private final SQLUserService userService;
 
-    public SQLListHandler(UserService userService){
+    public SQLListHandler(SQLUserService userService){
         this.userService = userService;
     }
 

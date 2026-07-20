@@ -4,11 +4,15 @@ import java.util.UUID;
 
 public class AuthData {
     private final String username;
-    private final String authToken;
+    private String authToken;
 
     public AuthData(String username){
         this.username = username;
         this.authToken = generateToken();
+    }
+
+    public void setAuthToken(String authToken){
+        this.authToken = authToken;
     }
 
     public static String generateToken(){

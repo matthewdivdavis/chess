@@ -7,7 +7,6 @@ import java.util.List;
 
 public class GameList {
     private final List<GameData> games = new ArrayList<>();
-    private int iD = 1;
 
     public void addGame(GameData game){
         games.add(game);
@@ -26,9 +25,6 @@ public class GameList {
     }
     public GameData at(int i){
         return games.get(i);
-    }
-    public int createID(){
-        return iD++;
     }
     public void clear(){
         games.clear();
