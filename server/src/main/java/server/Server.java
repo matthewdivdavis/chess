@@ -5,7 +5,6 @@ import io.javalin.*;
 import io.javalin.http.Handler;
 import service.SQLUserService;
 import service.UserService;
-import sqlhandlers.*;
 
 public class Server {
 
