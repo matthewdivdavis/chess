@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import exception.ResponseException;
+import kotlin.jvm.internal.ShortSpreadBuilder;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -80,64 +81,73 @@ public class SQLUserService{
         if(request.gameName() == null){
             throw new MissingDataException("no game name");
         }
-        if(authMem.getAuth(request.authToken()) == null){
-            throw new DataAccessException("unauthorized");
+        try{
+            if(sqlDataAccess.getAuth(request.authToken()) == null){
+                throw new DataAccessException("unauthorized");
+            }
+            int gameID = sqlDataAccess.createGame(request.gameName());
+            return new CreateResult(gameID);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
-        GameData game = GameDAO.createGame(gameMem.createID());
-        game.setGameName(request.gameName());
-        gameMem.addGame(game);
-        return new CreateResult(game.getGameID());
     }
 
-    public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
-        if(authMem.getAuth(request.authToken()) == null){
-            throw new DataAccessException("unauthorized");
-        }
+//    public ArrayList<GameResult> list(ListRequest request) throws DataAccessException{
+//        if(authMem.getAuth(request.authToken()) == null){
+//            throw new DataAccessException("unauthorized");
+//        }
+//
+//        ArrayList<GameResult> result = new ArrayList<>();
+//        for(int i = 0; i < gameMem.size(); i++){
+//            result.add(new GameResult(gameMem.at(i)));
+//            System.out.println(new GameResult(gameMem.at(i)));
+//        }
+//        return result;
+//    }
 
-        ArrayList<GameResult> result = new ArrayList<>();
-        for(int i = 0; i < gameMem.size(); i++){
-            result.add(new GameResult(gameMem.at(i)));
-            System.out.println(new GameResult(gameMem.at(i)));
-        }
-        return result;
-    }
-
-    public JoinResult join(String authToken, JoinRequest request) throws DataAccessException{
-        if(authMem.getAuth(authToken) == null){
-            throw new DataAccessException("unauthorized");
-        }
-        if(request.playerColor() == null){
-            throw new MissingDataException("request.color == null");
-        }
-        if(gameMem.getGame(request.gameID()) == null){
-            System.out.println("GameID = " + request.gameID());
-            throw new MissingDataException("gameID not found");
-        }
-        if(!request.playerColor().equals("BLACK") && !request.playerColor().equals("WHITE")){
-            throw new MissingDataException("color does not exist");
-        }
-        if(request.playerColor().equals("BLACK")){
-            if(gameMem.getGame(request.gameID()).getBlackUsername() == null){
-                gameMem.getGame(request.gameID()).setBlackUsername(authMem.getAuth(authToken).getUsername());
-            }
-            else{
-                throw new NameTakenException("color taken");
-            }
-        }else{
-            if(gameMem.getGame(request.gameID()).getWhiteUsername() == null){
-                gameMem.getGame(request.gameID()).setWhiteUsername(authMem.getAuth(authToken).getUsername());
-            }
-            else {
-                throw new DataAccessException("color taken");
-            }
-        }
-        return new JoinResult(request.playerColor(), request.gameID());
-    }
+//    public JoinResult join(String authToken, JoinRequest request) throws DataAccessException{
+//        if(request.playerColor() == null){
+//            throw new MissingDataException("request.color == null");
+//        }
+//        if(!request.playerColor().equals("BLACK") && !request.playerColor().equals("WHITE")){
+//            throw new MissingDataException("color does not exist");
+//        }
+//        try{
+//            if(sqlDataAccess.getAuth(authToken) == null){
+//                throw new DataAccessException("unauthorized");
+//            }
+//            if(sqlDataAccess.getGame(request.gameID()) == 0){
+//                System.out.println("GameID = " + request.gameID());
+//                throw new MissingDataException("gameID not found");
+//            }
+//        } catch (ResponseException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        if(gameMem.getGame(request.gameID()) == null){
+//            System.out.println("GameID = " + request.gameID());
+//            throw new MissingDataException("gameID not found");
+//        }
+//
+//        if(request.playerColor().equals("BLACK")){
+//            if(gameMem.getGame(request.gameID()).getBlackUsername() == null){
+//                gameMem.getGame(request.gameID()).setBlackUsername(authMem.getAuth(authToken).getUsername());
+//            }
+//            else{
+//                throw new NameTakenException("color taken");
+//            }
+//        }else{
+//            if(gameMem.getGame(request.gameID()).getWhiteUsername() == null){
+//                gameMem.getGame(request.gameID()).setWhiteUsername(authMem.getAuth(authToken).getUsername());
+//            }
+//            else {
+//                throw new DataAccessException("color taken");
+//            }
+//        }
+//        return new JoinResult(request.playerColor(), request.gameID());
+//    }
 
     public void clear(){
-        userMem.clear();
-        authMem.clear();
-        gameMem.clear();
         try{
             sqlDataAccess.clearDatabase();
         } catch (DataAccessException e) {

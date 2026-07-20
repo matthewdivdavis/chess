@@ -3,7 +3,10 @@ package dataaccess;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
+import org.eclipse.jetty.server.Authentication;
+import service.SQLUserService;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class MySqlDataAccess implements DataAccess{
@@ -40,11 +43,15 @@ public class MySqlDataAccess implements DataAccess{
 
     public UserData getUser(String username) throws ResponseException{
         try (Connection conn = DatabaseManager.getConnection()){
-            var statement = "SELECT username, email, password, json FROM user WHERE username=?";
+            var statement = "SELECT username, email, password FROM user WHERE username=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
                         return readUser(rs);
+                    }
+                    else{
+                        return null;
                     }
                 }
             }
@@ -52,16 +59,16 @@ public class MySqlDataAccess implements DataAccess{
             throw new ResponseException(ResponseException.Code.ServerError,
                     String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
     }
 
     public boolean checkPassword(String username, String password) throws ResponseException{
         try (Connection conn = DatabaseManager.getConnection()){
             var statement = "SELECT username, email, password FROM user WHERE username=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
-                        if(readUser(rs).password() == password){
+                        if(readUser(rs).password().equals(password)){
                             return true;
                         }
                     }
@@ -78,6 +85,7 @@ public class MySqlDataAccess implements DataAccess{
         try (Connection conn = DatabaseManager.getConnection()){
             var statement = "SELECT username, authToken FROM authorization WHERE username=?";
             try(PreparedStatement ps = conn.prepareStatement(statement)){
+                ps.setString(1, authToken);
                 try(ResultSet rs = ps.executeQuery()){
                     if(rs.next()){
                         return readAuth(rs);
@@ -101,17 +109,61 @@ public class MySqlDataAccess implements DataAccess{
             throw new RuntimeException(e);
         }
     }
+    public int createGame(String gameName) throws ResponseException{
+        var statement = "INSERT INTO gamedata (gameName) VALUES(?)";
+        try{
+            return executeGameUpdate(statement, gameName);
+        } catch (ResponseException e){
+            throw new ResponseException(ResponseException.Code.ServerError,
+                    String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    public int getGame(int gameID) throws ResponseException{
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "SELECT gameId, blackUsername, whiteUsername, gameName, gameJson FROM gamedata WHERE gameId=?";
+            try(PreparedStatement ps = conn.prepareStatement(statement)){
+                ps.setInt(1, gameID);
+                try(ResultSet rs = ps.executeQuery()){
+                    if(rs.next()){
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+
+    private int executeGameUpdate(String statement, String gameName) throws ResponseException{
+        try(Connection conn = DatabaseManager.getConnection()){
+            try(PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, gameName);
+                ps.executeUpdate();
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    int gameID = rs.getInt(1);
+                    return gameID;
+                }
+            }
+        } catch (SQLException e){
+            throw new ResponseException(ResponseException.Code.ServerError,
+                    String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private UserData readUser(ResultSet rs) throws SQLException {
-        var json = rs.getString("json");
-        UserData userData = new Gson().fromJson(json, UserData.class);
-        return userData;
+        return new UserData(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException{
+        return new GameData(rs.getInt("gameId"));
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException{
-        var json = rs.getString("json");
-        AuthData authData = new Gson().fromJson(json, AuthData.class);
-        return authData;
+        return new AuthData(rs.getString("username"));
     }
 
     public GameList listGames() throws ResponseException {
