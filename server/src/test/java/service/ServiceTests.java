@@ -1,21 +1,10 @@
 package service;
 import dataaccess.DataAccessException;
 import dataaccess.MissingDataException;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
-import passoff.model.TestAuthResult;
-import passoff.model.TestCreateRequest;
-import passoff.model.TestUser;
-import passoff.server.TestServerFacade;
 import server.*;
 
 public class ServiceTests {
-    private static TestUser existingUser;
-    private static TestUser newUser;
-    private static TestCreateRequest createRequest;
-    private static TestServerFacade serverFacade;
-    private static Server server;
-    private String existingAuth;
 
     // Make tests for:
     // REGISTER

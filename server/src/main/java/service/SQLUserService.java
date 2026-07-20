@@ -9,15 +9,10 @@ import server.*;
 
 import java.util.ArrayList;
 
-public class UserService{
-    MemoryUserDAO userMem;
-    MemoryAuthDAO authMem;
-    MemoryGameDAO gameMem;
+public class SQLUserService{
     MySqlDataAccess sqlDataAccess;
-    public UserService(){
-        userMem = new MemoryUserDAO();
-        authMem = new MemoryAuthDAO();
-        gameMem = new MemoryGameDAO();
+
+    public SQLUserService(){
         try{
             sqlDataAccess = new MySqlDataAccess();
         }
@@ -31,23 +26,19 @@ public class UserService{
         if(request.username() == null || request.password() == null){
             throw new MissingDataException("username or password empty");
         }
-        // Check to see if username is taken
-        if(userMem.getUser(request.username()) != null){
-            throw new DataAccessException("username already taken");
-        }
-        // add user data
         try{
+            // Check to see if username is taken
+            if(sqlDataAccess.getUser(request.username()) != null){
+                throw new DataAccessException("username already taken");
+            }
+            // add user data
             sqlDataAccess.addUser(new UserData(request.username(), request.password(), request.email()));
-            sqlDataAccess.addAuth(new AuthData(request.username()));
+            AuthData auth = new AuthData(request.username());
+            sqlDataAccess.addAuth(auth);
+            return new RegisterResult(request.username(), auth.getAuthToken());
         } catch (ResponseException e) {
             throw new DataAccessException(e.toString());
         }
-        userMem.addUser(UserDAO.createUser(request.username(), request.password(), request.email()));
-        // create AuthData
-        AuthData auth = AuthDAO.createAuth(request.username());
-        // add authData
-        authMem.addAuth(auth);
-        return new RegisterResult(request.username(), auth.getAuthToken());
     }
 
     public LoginResult login(LoginRequest request) throws DataAccessException{
@@ -55,25 +46,34 @@ public class UserService{
         if(request.username() == null || request.password() == null){
             throw new MissingDataException("username or password empty");
         }
-        // check username exists
-        else if(userMem.getUser(request.username()) == null){
-            throw new DataAccessException("username could not be found");
+        try{
+            // check username exists
+            if(sqlDataAccess.getUser(request.username()) == null){
+                throw new DataAccessException("username could not be found");
+            }
+            // check password is right
+            if (!sqlDataAccess.checkPassword(request.username(), request.password())) {
+                throw new DataAccessException("password did not match");
+            }
+            AuthData auth = new AuthData(request.username());
+            sqlDataAccess.addAuth(auth);
+            return new LoginResult(request.username(), auth.getAuthToken());
+        }catch (ResponseException e) {
+            throw new DataAccessException(e.toString());
         }
-        // check password is right
-        if (userMem.getPassword(request.username(), request.password()) == null) {
-            throw new DataAccessException("password did not match");
-        }
-        AuthData auth = AuthDAO.createAuth(request.username());
-        authMem.addAuth(auth);
-        return new LoginResult(request.username(), auth.getAuthToken());
+
     }
 
     public LogoutResult logout(LogoutRequest request) throws DataAccessException{
-        if(authMem.getAuth(request.authToken()) == null){
-            throw new DataAccessException("unauthorized");
+        try{
+            if(sqlDataAccess.getAuth(request.authToken()) == null){
+                throw new DataAccessException("unauthorized");
+            }
+            sqlDataAccess.remove(request.authToken());
+            return new LogoutResult(request.authToken());
+        } catch (ResponseException e) {
+            throw new DataAccessException(e.toString());
         }
-        authMem.remove(request.authToken());
-        return null;
     }
 
     public CreateResult create(CreateRequest request) throws DataAccessException{
