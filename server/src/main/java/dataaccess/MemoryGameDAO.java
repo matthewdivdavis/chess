@@ -1,18 +1,17 @@
 package dataaccess;
-
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class MemoryGameDAO {
     private final List<GameData> games = new ArrayList<>();
     private int iD = 1;
-
     public void addGame(GameData game){
         games.add(game);
     }
-
+    public void setGameId(int i, String j){
+        getGame(i).setGameName(j);
+    }
     public GameData getGame(int gameID){
         for(GameData g : games){
             if(g.getGameID() == gameID){

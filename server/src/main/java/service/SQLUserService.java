@@ -6,12 +6,14 @@ import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import server.*;
+import serviceSQL.*;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class SQLUserService implements ClearService,
         CreateService, LoginService, RegisterService,
-        JoinService, ListService, LogoutService{
+        JoinService, ListService, LogoutService {
     MySqlDataAccess sqlDataAccess;
 
     public SQLUserService(){
@@ -160,11 +162,11 @@ public class SQLUserService implements ClearService,
     }
 
     @Override
-    public void clear(){
+    public void clear() throws DataAccessException {
         try{
             sqlDataAccess.clearDatabase();
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.toString());
         }
     }
 }

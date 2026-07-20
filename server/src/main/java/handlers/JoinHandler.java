@@ -8,7 +8,7 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.JoinRequest;
 import service.JoinResult;
-import service.JoinService;
+import serviceSQL.JoinService;
 
 import java.util.Map;
 

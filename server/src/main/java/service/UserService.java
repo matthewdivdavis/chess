@@ -1,17 +1,16 @@
 package service;
 
 import dataaccess.*;
-import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import server.*;
+import serviceSQL.*;
 
 import java.util.ArrayList;
 
 public class UserService implements ClearService,
         CreateService, LoginService, JoinService,
-        ListService, LogoutService, RegisterService{
+        ListService, LogoutService, RegisterService {
     MemoryUserDAO userMem;
     MemoryAuthDAO authMem;
     MemoryGameDAO gameMem;

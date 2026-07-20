@@ -1,7 +1,8 @@
-package service;
+package serviceSQL;
 
 import dataaccess.DataAccessException;
 import server.ListRequest;
+import service.GameResult;
 
 import java.util.ArrayList;
 
