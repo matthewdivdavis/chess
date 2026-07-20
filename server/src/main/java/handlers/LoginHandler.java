@@ -7,7 +7,7 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.*;
 import service.*;
-import serviceSQL.LoginService;
+import servicesql.LoginService;
 
 import java.util.Map;
 

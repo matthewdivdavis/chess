@@ -6,9 +6,8 @@ import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import server.*;
-import serviceSQL.*;
+import servicesql.*;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 public class SQLUserService implements ClearService,

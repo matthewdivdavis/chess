@@ -1,5 +1,6 @@
 package dataaccess;
 
+import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import server.*;
 import service.*;

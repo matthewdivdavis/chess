@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import serviceSQL.ClearService;
+import servicesql.ClearService;
 
 import java.util.Map;
 

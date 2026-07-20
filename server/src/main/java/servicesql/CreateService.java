@@ -1,4 +1,4 @@
-package serviceSQL;
+package servicesql;
 
 import dataaccess.DataAccessException;
 import server.CreateRequest;

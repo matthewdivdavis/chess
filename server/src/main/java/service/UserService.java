@@ -4,7 +4,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import server.*;
-import serviceSQL.*;
+import servicesql.*;
 
 import java.util.ArrayList;
 

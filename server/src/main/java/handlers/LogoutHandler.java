@@ -6,7 +6,7 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.LogoutRequest;
 import service.LogoutResult;
-import serviceSQL.LogoutService;
+import servicesql.LogoutService;
 
 import java.util.Map;
 
