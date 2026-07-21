@@ -300,7 +300,7 @@ public class MySqlDataAccess implements DataAccess{
     /**
      * Clears all data from the database by truncating every table.
      */
-    public void clearDatabase() throws DataAccessException {
+    public void clearDatabase() throws ResponseException {
         var truncateStatements = new String[]{
                 "TRUNCATE TABLE `user`",
                 "TRUNCATE TABLE authorization",
@@ -313,7 +313,9 @@ public class MySqlDataAccess implements DataAccess{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to clear database", ex);
+            throw new ResponseException(ResponseException.Code.ClientError, ex.toString());
+        } catch (DataAccessException e) {
+            throw new ResponseException(ResponseException.Code.ClientError, e.toString());
         }
     }
 }

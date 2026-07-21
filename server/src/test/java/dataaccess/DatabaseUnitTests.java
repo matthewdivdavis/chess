@@ -26,7 +26,7 @@ public class DatabaseUnitTests {
             // register the user to the database
             RegisterResult result = userService.register(request);
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -136,7 +136,7 @@ public class DatabaseUnitTests {
             LoginResult result = userService.login(loginRequest);
             userService.logout(new LogoutRequest(result.authToken()));
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -156,7 +156,7 @@ public class DatabaseUnitTests {
             });
 
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -175,7 +175,7 @@ public class DatabaseUnitTests {
             LoginResult result = userService.login(loginRequest);
             userService.create(new CreateRequest(result.authToken(), "newGame"));
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -194,7 +194,7 @@ public class DatabaseUnitTests {
             for(int i = 0; i < 9; i++){
                 userService.create(new CreateRequest(result.authToken(), "newGame"));
             }
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -213,7 +213,7 @@ public class DatabaseUnitTests {
             Assertions.assertThrows(DataAccessException.class, () -> {
                 userService.create(new CreateRequest(result.authToken(), null));
             });
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -232,7 +232,7 @@ public class DatabaseUnitTests {
             Assertions.assertThrows(DataAccessException.class, () -> {
                 userService.create(new CreateRequest("Hello World!", "gameName"));
             });
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -249,7 +249,7 @@ public class DatabaseUnitTests {
             int gameId = userService.create(new CreateRequest(result.authToken(), "newGame")).gameID();
             JoinRequest request = new JoinRequest("BLACK", gameId);
             userService.join(result.authToken(), request);
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -268,7 +268,7 @@ public class DatabaseUnitTests {
             Assertions.assertThrows(DataAccessException.class, () -> {
                 userService.join(result.authToken(), request);
             });
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -287,7 +287,7 @@ public class DatabaseUnitTests {
             Assertions.assertThrows(DataAccessException.class, () -> {
                 userService.join("Heeheehoohoo", request);
             });
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -306,7 +306,7 @@ public class DatabaseUnitTests {
             Assertions.assertThrows(DataAccessException.class, () -> {
                 userService.join(result.authToken(), request);
             });
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ResponseException e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import server.CreateRequest;
 import dataaccess.DataAccessException;
 import dataaccess.MissingDataException;
@@ -36,6 +37,10 @@ public class CreateHandler implements Handler {
             ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);
+            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
+            ctx.contentType("application/json");
+        } catch (ResponseException e) {
+            ctx.status(500);
             ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         }

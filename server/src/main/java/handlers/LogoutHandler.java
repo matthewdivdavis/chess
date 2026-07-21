@@ -2,6 +2,7 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import server.LogoutRequest;
@@ -28,6 +29,12 @@ public class LogoutHandler implements Handler{
             ctx.contentType("application/json");
         }catch (DataAccessException e){
             ctx.status(401);
+            ctx.result(gson.toJson(
+                    Map.of("message", "Error: " + e.getMessage())
+            ));
+            ctx.contentType("application/json");
+        } catch (ResponseException e){
+            ctx.status(500);
             ctx.result(gson.toJson(
                     Map.of("message", "Error: " + e.getMessage())
             ));
