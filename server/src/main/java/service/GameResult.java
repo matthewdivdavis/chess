@@ -17,11 +17,9 @@ public class GameResult {
 
     @Override
     public String toString() {
-        return "ListResult{" +
-                "gameID=" + gameID +
-                ", whiteUsername='" + whiteUsername + '\'' +
-                ", blackUsername='" + blackUsername + '\'' +
-                ", gameName='" + gameName + '\'' +
-                '}';
+        return gameName + ":\n" +
+                "\tgameID = " + gameID +
+                "\n\twhiteUsername='" + whiteUsername + '\'' +
+                "\n\tblackUsername='" + blackUsername + '\'';
     }
 }

@@ -5,13 +5,11 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
-import server.LoginRequest;
-import server.RegisterRequest;
-import server.Server;
-import service.LoginResult;
-import service.RegisterResult;
-import service.SQLUserService;
+import server.*;
 
+import service.*;
+
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +36,7 @@ public class ClientMain {
         }
     }
 
-    private static int postLogin(PrintStream out){
+    private static int postLogin(PrintStream out) throws IOException, InterruptedException {
         Scanner myScan = new Scanner(System.in);
         while(true){
             out.printf(SET_TEXT_COLOR_LIGHT_GREY);
@@ -121,10 +119,14 @@ public class ClientMain {
         HttpResponse<String> response = ServerFacade.login(request);
         if(response.statusCode() == 200){
             LoginResult result = gson.fromJson(response.body(), LoginResult.class);
-            System.out.println(result.authToken());
+            System.out.println("Logged in as " + username);
+            return true;
         }
-        System.out.println("Logged in as " + username);
-        return true;
+        else{
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
+        return false;
     }
     private static boolean register(PrintStream out) throws Exception {
         out.printf("%sInput your username, password and email (%s%susername password email%s%s): ",SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE);
@@ -132,31 +134,63 @@ public class ClientMain {
         String username = myScan.next();
         String password = myScan.next();
         String email = myScan.next();
+
         // for sending the data
         Gson gson = new Gson();
         RegisterRequest request = new RegisterRequest(username, password, email);
         HttpResponse<String> response = ServerFacade.register(request);
 
-        if(response.statusCode() > 300 || response.statusCode() < 200){
-            return false;
+        if(response.statusCode() == 200){
+            LoginResult result = gson.fromJson(response.body(), LoginResult.class);
+            System.out.println("Logged in as " + username);
+            return true;
         }
-        System.out.println("Logged in as " + username);
-        return true;
+        else{
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
+        return false;
     }
 
-    private static boolean create(PrintStream out){
+    private static boolean create(PrintStream out) throws IOException, InterruptedException {
         out.printf("%sInput a game name: ", SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String gameName = myScan.next();
 
-        ServerFacade.create(gameName);
-        out.println("Created game '" + gameName + "'");
-        return true;
+        // for sending the data
+        Gson gson = new Gson();
+        HttpResponse<String> response = ServerFacade.create(gameName);
+
+        if(response.statusCode() == 200){
+            CreateResult result = gson.fromJson(response.body(), CreateResult.class);
+            System.out.println("Game created as '" + gameName + "' with ID: " + result.gameID());
+            return true;
+        }
+        else{
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
+        return false;
     }
 
-    private static boolean list(PrintStream out){
-        ServerFacade.list();
-        out.println("All the games: ");
+    private static boolean list(PrintStream out) throws IOException, InterruptedException {
+
+        // for sending the data
+        Gson gson = new Gson();
+        HttpResponse<String> response = ServerFacade.list();
+
+        if(response.statusCode() == 200){
+            ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
+//            System.out.printf("%s%s",SET_TEXT_COLOR_BLUE ,result.games());
+            for(var game : result.games()){
+                out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+            }
+            return true;
+        }
+        else{
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
         return true;
     }
 
@@ -167,10 +201,17 @@ public class ClientMain {
         return true;
     }
 
-    private static boolean logout(PrintStream out){
-        out.println("Logging you out...");
-        ServerFacade.logout();
-        return true;
+    private static boolean logout(PrintStream out) throws IOException, InterruptedException {
+        HttpResponse<String> response = ServerFacade.logout();
+        if(response.statusCode() == 200){
+            return true;
+        }
+        else{
+            Gson gson = new Gson();
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
+        return false;
     }
 
     private static void clear() throws Exception{

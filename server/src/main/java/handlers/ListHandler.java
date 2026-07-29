@@ -23,7 +23,6 @@ public class ListHandler implements Handler {
     public void handle(Context ctx){
         String authTok = ctx.header("authorization");
         ListRequest request = new ListRequest(authTok);
-        System.out.println("Request: "+request);
         Gson gson = new Gson();
         try{
             ArrayList<GameResult> games = userService.list(request);
