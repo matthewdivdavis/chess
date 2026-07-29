@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import server.*;
 
 import service.*;
-import service.GameResult;
 
 import java.io.IOException;
 import java.io.PrintStream;
