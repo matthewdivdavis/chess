@@ -1,14 +1,19 @@
 package client;
 
 import chess.*;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import exception.ResponseException;
+import model.AuthData;
+import server.LoginRequest;
 import server.RegisterRequest;
 import server.Server;
+import service.LoginResult;
 import service.RegisterResult;
 import service.SQLUserService;
 
 import java.io.PrintStream;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -17,7 +22,7 @@ import static ui.EscapeSequences.*;
 
 public class ClientMain {
     public static Server server;
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         server = new Server();
         var port = server.run(8080);
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -61,7 +66,7 @@ public class ClientMain {
         }
         return 0;
     }
-    private static int preLogin(PrintStream out){
+    private static int preLogin(PrintStream out) throws Exception {
         Scanner myScan = new Scanner(System.in);
         out.println("Welcome to 240 Chess. Type 'help' to get started. ");
         boolean loggedIn = false;
@@ -79,10 +84,9 @@ public class ClientMain {
             } else if(input.equals("quit")){
                 return 1;
             }
-            else if(input.equals("observe")){
-                observe(out);
+            else if(input.equals("clear")){
+                clear();
             }
-
         }
         return 0;
     }
@@ -105,24 +109,37 @@ public class ClientMain {
         out.printf(SET_TEXT_COLOR_LIGHT_GREY);
     }
 
-    private static boolean login(PrintStream out){
+    private static boolean login(PrintStream out) throws Exception {
         out.printf("%sInput your username and password (%s%susername password%s%s): ",SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
 
-        ServerFacade.login(username, password);
+        LoginRequest request = new LoginRequest(username, password);
+
+        Gson gson = new Gson();
+        HttpResponse<String> response = ServerFacade.login(request);
+        if(response.statusCode() == 200){
+            LoginResult result = gson.fromJson(response.body(), LoginResult.class);
+            System.out.println(result.authToken());
+        }
         System.out.println("Logged in as " + username);
         return true;
     }
-    private static boolean register(PrintStream out){
+    private static boolean register(PrintStream out) throws Exception {
         out.printf("%sInput your username, password and email (%s%susername password email%s%s): ",SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
         String email = myScan.next();
+        // for sending the data
+        Gson gson = new Gson();
+        RegisterRequest request = new RegisterRequest(username, password, email);
+        HttpResponse<String> response = ServerFacade.register(request);
 
-        ServerFacade.register(username, password, email);
+        if(response.statusCode() > 300 || response.statusCode() < 200){
+            return false;
+        }
         System.out.println("Logged in as " + username);
         return true;
     }
@@ -156,27 +173,38 @@ public class ClientMain {
         return true;
     }
 
+    private static void clear() throws Exception{
+        ServerFacade.clear();
+        return;
+    }
+
     private static void printGame(PrintStream out){
-        out.printf("%s                             %s\n", SET_BG_COLOR_WHITE, RESET_BG_COLOR);
         char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-        out.printf("   %s", SET_BG_COLOR_WHITE);
+        out.printf("%s%s   ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK);
         for(char c : lets){
-            out.printf(" %s%s%s ",SET_TEXT_BOLD, SET_TEXT_COLOR_BLACK, c);
+            out.printf(" %s%s ",SET_TEXT_BOLD, c);
         }
         out.printf("   %s\n", RESET_BG_COLOR);
+        int d = 1;
         for(int j = 0; j < 4; j++){
-            out.printf("%s %d ", SET_BG_COLOR_WHITE, j+1);
+            out.printf("%s %d ", SET_BG_COLOR_WHITE, d);
             for(int i = 0; i < 4; i++){
                 out.printf("%s   ", SET_BG_COLOR_LIGHT_GREY);
                 out.printf("%s   ", SET_BG_COLOR_DARK_GREY);
             }
-            out.printf("%s   %s\n",SET_BG_COLOR_WHITE, RESET_BG_COLOR);
+            out.printf("%s %d %s\n",SET_BG_COLOR_WHITE, d++, RESET_BG_COLOR);
+            out.printf("%s %d ", SET_BG_COLOR_WHITE, d);
             for(int i = 0; i < 4; i++){
                 out.printf("%s   ", SET_BG_COLOR_DARK_GREY);
                 out.printf("%s   ", SET_BG_COLOR_LIGHT_GREY);
             }
-            out.printf("%s   %s%s%s\n",SET_BG_COLOR_WHITE, RESET_BG_COLOR, RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT);
+            out.printf("%s %d %s\n",SET_BG_COLOR_WHITE, d++, RESET_BG_COLOR);
         }
+        out.printf("%s%s   ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK);
+        for(char c : lets){
+            out.printf(" %s%s ",SET_TEXT_BOLD, c);
+        }
+        out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
     }
 
 }

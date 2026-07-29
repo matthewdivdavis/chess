@@ -1,6 +1,7 @@
 package client;
 
 import org.junit.jupiter.api.*;
+import server.RegisterRequest;
 import server.Server;
 
 
@@ -32,8 +33,9 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("Register a new user")
     public void registerNorm(){
-        String[] args = {"Hello", "World"};
-        ServerFacade.main(args);
+        String username = "username";
+        String password = "password";
+        String email = "urcool@gmail.com";
     }
 
 }
