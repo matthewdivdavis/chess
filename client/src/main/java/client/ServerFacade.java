@@ -78,6 +78,10 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public static HttpResponse<String> observe(int gameId) throws IOException, InterruptedException{
+        return list();
+    }
+
     public static HttpResponse<String> list() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()

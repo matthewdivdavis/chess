@@ -17,6 +17,9 @@ import static ui.EscapeSequences.*;
 
 public class ClientMain {
     public static Server server;
+
+    public ClientMain(){
+    }
     public static void main(String[] args) throws Exception {
         server = new Server();
         var port = server.run(8080);
@@ -226,10 +229,12 @@ public class ClientMain {
                 return false;
             }
             out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
-//            if(color.equals("BLACK")){
-//                printGameBlack(out);
-//            }
-            printGameWhite(out);
+            if(color.equals("BLACK")){
+                printGameBlack(out);
+            }
+            else{
+                printGameWhite(out);
+            }
         }
         else{
             Gson gson = new Gson();
@@ -281,7 +286,7 @@ public class ClientMain {
                 if(isLower(board[r][c])){
                     // black pieces
                     p = toUpper(board[r][c]);
-                    TEXT_COLOR = SET_TEXT_COLOR_BLACK;
+                    TEXT_COLOR = SET_TEXT_COLOR_BLUE;
                     TEXT_BOLD = SET_TEXT_BOLD;
                 }
                 else{

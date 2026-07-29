@@ -1,5 +1,6 @@
 package client;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.LoginRequest;
 import server.RegisterRequest;
@@ -17,7 +18,7 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade(port);
     }
@@ -28,21 +29,63 @@ public class ServerFacadeTests {
     }
 
 
-//    @Test
-//    public void sampleTest() {
-//        Assertions.assertTrue(true);
-//    }
+    @Test
+    @Order(1)
+    @DisplayName("Register a new user")
+    public void registerNorm(){
+        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+        });
+    }
 
-//    @Test
-//    @Order(1)
-//    @DisplayName("Register a new user")
-//    public void registerNorm(){
-//        String username = "username";
-//        String password = "password";
-//        String email = "urcool@gmail.com";
-//    }
+    @Test
+    @Order(2)
+    @DisplayName("Login normal")
+    public void loginNorm(){
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.login(new LoginRequest("matt", "matt"));
+        });
+    }
+    @Test
+    @Order(3)
+    @DisplayName("Create normal")
+    public void createNorm(){
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.create("matthewGame");
+        });
+    }
+    @Test
+    @Order(4)
+    @DisplayName("Join normal")
+    public void joinNorm(){
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.join(1, "BLACK");
+        });
+    }
+    @Test
+    @Order(5)
+    @DisplayName("List normal")
+    public void ListNorm(){
+        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+        });
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.list();
+        });
+    }
 
-
-
-
+    @Test
+    @Order(6)
+    @DisplayName("Observe normal")
+    public void observeNorm(){
+        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+        });
+        Assertions.assertDoesNotThrow(() -> {
+            ServerFacade.observe(1);
+        });
+    }
 }
