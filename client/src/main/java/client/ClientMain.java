@@ -264,17 +264,7 @@ public class ClientMain {
         ServerFacade.clear();
     }
 
-    public static void printGameWhite(PrintStream out){
-        char[][] board = {
-                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
-                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}};
-        char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    public static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range){
         String TEXT_COLOR;
         String BG_COLOR;
         String TEXT_BOLD;
@@ -283,8 +273,9 @@ public class ClientMain {
         for(char l : lets){
             out.printf(" %s ", l);
         }
+        int r = 0;
         out.printf("   %s\n", RESET_BG_COLOR);
-        for(int r = 0; r < 8; r++){
+        for(int a : range){
             out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - r);
             for(int c = 0; c < 8; c++){
                 if(isLower(board[r][c])){
@@ -313,12 +304,43 @@ public class ClientMain {
             }
             out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - r);
             out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
+            r++;
         }
         out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
             out.printf(" %s ", l);
         }
         out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
+    }
+
+    public static void printGameBlack(PrintStream out){
+        char[][] board = {
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',}};
+        char[] lets = {'h', 'g', 'f', 'e', 'd', 'c', 'b' ,'a'};
+        int[] range = {7, 6, 5, 4, 3, 2, 1, 0};
+        printBoard(out, board, lets, range);
+    }
+
+    public static void printGameWhite(PrintStream out){
+        char[][] board = {
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}};
+        char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
+        printBoard(out, board, lets, range);
     }
 
     private static char toUpper(char c){

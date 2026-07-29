@@ -42,12 +42,6 @@ public class ServerFacadeTests {
 //        String email = "urcool@gmail.com";
 //    }
 
-    @Test
-    @Order(1)
-    @DisplayName("Print board")
-    public void printBoard(){
-        ClientMain.printGameWhite(new PrintStream(System.out, true, StandardCharsets.UTF_8));
-    }
 
 
 
