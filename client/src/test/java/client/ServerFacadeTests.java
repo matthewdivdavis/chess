@@ -1,8 +1,12 @@
 package client;
 
 import org.junit.jupiter.api.*;
+import server.LoginRequest;
 import server.RegisterRequest;
 import server.Server;
+
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 
 public class ServerFacadeTests {
@@ -29,13 +33,22 @@ public class ServerFacadeTests {
 //        Assertions.assertTrue(true);
 //    }
 
+//    @Test
+//    @Order(1)
+//    @DisplayName("Register a new user")
+//    public void registerNorm(){
+//        String username = "username";
+//        String password = "password";
+//        String email = "urcool@gmail.com";
+//    }
+
     @Test
     @Order(1)
-    @DisplayName("Register a new user")
-    public void registerNorm(){
-        String username = "username";
-        String password = "password";
-        String email = "urcool@gmail.com";
+    @DisplayName("Print board")
+    public void printBoard(){
+        ClientMain.printGameWhite(new PrintStream(System.out, true, StandardCharsets.UTF_8));
     }
+
+
 
 }

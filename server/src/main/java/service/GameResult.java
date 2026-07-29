@@ -15,6 +15,10 @@ public class GameResult {
         gameName = game.getGameName();
     }
 
+    public int getGameID(){
+        return gameID;
+    }
+
     @Override
     public String toString() {
         return gameName + ":\n" +

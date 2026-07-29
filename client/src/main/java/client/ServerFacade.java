@@ -1,9 +1,6 @@
 package client;
 import com.google.gson.Gson;
-import server.CreateRequest;
-import server.ListRequest;
-import server.LoginRequest;
-import server.RegisterRequest;
+import server.*;
 import service.LoginResult;
 import service.RegisterResult;
 
@@ -91,9 +88,6 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static void observe(){
-
-    }
     public static HttpResponse<String> logout() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -104,5 +98,20 @@ public class ServerFacade {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         authorization = "";
         return response;
+    }
+
+    public static HttpResponse<String> join(int gameId, String color) throws IOException, InterruptedException {
+        JoinRequest req = new JoinRequest(color, gameId);
+        Gson gson = new Gson();
+        String json = gson.toJson(req);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + port + "/game"))
+                .header("Authorization", authorization)
+                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 }

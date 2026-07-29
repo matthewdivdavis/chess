@@ -2,12 +2,10 @@ package client;
 
 import chess.*;
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import exception.ResponseException;
-import model.AuthData;
 import server.*;
 
 import service.*;
+import service.GameResult;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -15,7 +13,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-import static dataaccess.DatabaseManager.createDatabase;
 import static ui.EscapeSequences.*;
 
 public class ClientMain {
@@ -49,10 +46,13 @@ public class ClientMain {
                 create(out);
             }
             else if(input.equals("list")){
-                list(out);
+                list(out, 0);
             }
             else if(input.equals("observe")){
                 observe(out);
+            }
+            else if(input.equals("join")){
+                join(out);
             }
             else if(input.equals("logout")){
                 logout(out);
@@ -173,31 +173,69 @@ public class ClientMain {
         return false;
     }
 
-    private static boolean list(PrintStream out) throws IOException, InterruptedException {
-
+    private static GameResult list(PrintStream out, int gameId) throws IOException, InterruptedException {
         // for sending the data
         Gson gson = new Gson();
         HttpResponse<String> response = ServerFacade.list();
 
         if(response.statusCode() == 200){
             ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
-//            System.out.printf("%s%s",SET_TEXT_COLOR_BLUE ,result.games());
+            if(gameId > 0){
+                for(GameResult game : result.games()){
+                    if(game.getGameID() == gameId){
+                        return game;
+                    }
+                }
+                return null;
+            }
             for(var game : result.games()){
                 out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
             }
-            return true;
         }
         else{
             ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
             System.out.println(result.message());
         }
+        return null;
+    }
+
+    public static boolean observe(PrintStream out) throws IOException, InterruptedException {
+        out.printf("%sInput gameID: ", SET_TEXT_COLOR_BLUE);
+        Scanner myScan = new Scanner(System.in);
+        int gameId = myScan.nextInt();
+        GameResult game = getGame(out, gameId);
+        if(game == null){
+            out.printf("%sCould not find game %d. Please Try again.\n", SET_TEXT_COLOR_MAGENTA, gameId);
+            return false;
+        }
+        out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+        printGameWhite(out);
         return true;
     }
 
-    private static boolean observe(PrintStream out){
-        ServerFacade.observe();
-        printGame(out);
-        out.println("Observing this game: hurdurdur");
+    private static boolean join(PrintStream out) throws IOException, InterruptedException {
+        out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE, RESET_TEXT_ITALIC);
+        Scanner myScan = new Scanner(System.in);
+        int gameId = myScan.nextInt();
+        String color = myScan.next();
+        HttpResponse<String> response = ServerFacade.join(gameId, color);
+        if(response.statusCode() == 200){
+            GameResult game = getGame(out, gameId);
+            if(game == null){
+                out.printf("%sCould not find game %d. Please Try again.\n", SET_TEXT_COLOR_MAGENTA, gameId);
+                return false;
+            }
+            out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+//            if(color.equals("BLACK")){
+//                printGameBlack(out);
+//            }
+            printGameWhite(out);
+        }
+        else{
+            Gson gson = new Gson();
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            System.out.println(result.message());
+        }
         return true;
     }
 
@@ -214,38 +252,90 @@ public class ClientMain {
         return false;
     }
 
-    private static void clear() throws Exception{
-        ServerFacade.clear();
-        return;
+
+    private static GameResult getGame(PrintStream out, int gameId) throws IOException, InterruptedException {
+        if(gameId < 1){
+            return null;
+        }
+        return list(out, gameId);
     }
 
-    private static void printGame(PrintStream out){
+    private static void clear() throws Exception{
+        ServerFacade.clear();
+    }
+
+    public static void printGameWhite(PrintStream out){
+        char[][] board = {
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}};
         char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-        out.printf("%s%s   ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK);
-        for(char c : lets){
-            out.printf(" %s%s ",SET_TEXT_BOLD, c);
+        String TEXT_COLOR;
+        String BG_COLOR;
+        String TEXT_BOLD;
+        char p;
+        out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        for(char l : lets){
+            out.printf(" %s ", l);
         }
         out.printf("   %s\n", RESET_BG_COLOR);
-        int d = 1;
-        for(int j = 0; j < 4; j++){
-            out.printf("%s %d ", SET_BG_COLOR_WHITE, d);
-            for(int i = 0; i < 4; i++){
-                out.printf("%s   ", SET_BG_COLOR_LIGHT_GREY);
-                out.printf("%s   ", SET_BG_COLOR_DARK_GREY);
+        for(int r = 0; r < 8; r++){
+            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - r);
+            for(int c = 0; c < 8; c++){
+                if(isLower(board[r][c])){
+                    // black pieces
+                    p = toUpper(board[r][c]);
+                    TEXT_COLOR = SET_TEXT_COLOR_BLACK;
+                    TEXT_BOLD = SET_TEXT_BOLD;
+                }
+                else{
+                    // white pieces
+                    p = board[r][c];
+                    TEXT_COLOR = SET_TEXT_COLOR_WHITE;
+                    TEXT_BOLD = RESET_TEXT_BOLD_FAINT;
+                }
+                if(r % 2 == 0 && c % 2 == 0){
+                    BG_COLOR = SET_BG_COLOR_DARK_GREY;
+                }
+                else if(r % 2 != 0 && c % 2 != 0){
+                    BG_COLOR = SET_BG_COLOR_DARK_GREY;
+                }
+                else{
+                    BG_COLOR = SET_BG_COLOR_LIGHT_GREY;
+                }
+                out.printf("%s %s%s%s ", BG_COLOR, TEXT_COLOR, TEXT_BOLD, p);
+                out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
             }
-            out.printf("%s %d %s\n",SET_BG_COLOR_WHITE, d++, RESET_BG_COLOR);
-            out.printf("%s %d ", SET_BG_COLOR_WHITE, d);
-            for(int i = 0; i < 4; i++){
-                out.printf("%s   ", SET_BG_COLOR_DARK_GREY);
-                out.printf("%s   ", SET_BG_COLOR_LIGHT_GREY);
-            }
-            out.printf("%s %d %s\n",SET_BG_COLOR_WHITE, d++, RESET_BG_COLOR);
+            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - r);
+            out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
         }
-        out.printf("%s%s   ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK);
-        for(char c : lets){
-            out.printf(" %s%s ",SET_TEXT_BOLD, c);
+        out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        for(char l : lets){
+            out.printf(" %s ", l);
         }
         out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
+    }
+
+    private static char toUpper(char c){
+        if(c >= 'A' && c <= 'Z'){
+            return c;
+        }
+        else if(c >= 'a' && c <= 'z'){
+            return (char) (c-32);
+        }
+        return c;
+    }
+
+    private static boolean isLower(char c){
+        if(c >= 'A' && c <= 'Z'){
+            return false;
+        }
+        return true;
     }
 
 }
