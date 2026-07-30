@@ -14,12 +14,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerFacade {
-    private static int port = 8080;
+    private static int port;
     private static final String serverUrl = "http://localhost:";
     private static String authorization;
 
     public ServerFacade(int port){
-//        this.port = port;
+        this.port = port;
     }
     public static void main(String[] args){
     }

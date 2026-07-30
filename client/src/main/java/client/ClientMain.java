@@ -16,7 +16,6 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class ClientMain {
-    public static Server server;
 
     public ClientMain(){
     }
