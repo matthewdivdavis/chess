@@ -109,7 +109,12 @@ public class ClientMain {
     }
 
     private static boolean login(PrintStream out) throws Exception {
-        out.printf("%sInput your username and password (%s%susername password%s%s): ",SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE);
+        out.printf("%sInput your username and password (%s%susername password%s%s): ",
+                SET_TEXT_COLOR_BLUE,
+                SET_TEXT_COLOR_MAGENTA,
+                SET_TEXT_ITALIC,
+                RESET_TEXT_ITALIC,
+                SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
@@ -130,7 +135,12 @@ public class ClientMain {
         return false;
     }
     private static boolean register(PrintStream out) throws Exception {
-        out.printf("%sInput your username, password and email (%s%susername password email%s%s): ",SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE);
+        out.printf("%sInput your username, password and email (%s%susername password email%s%s): ",
+                SET_TEXT_COLOR_BLUE,
+                SET_TEXT_COLOR_MAGENTA,
+                SET_TEXT_ITALIC,
+                RESET_TEXT_ITALIC,
+                SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
@@ -218,7 +228,12 @@ public class ClientMain {
     }
 
     private static boolean join(PrintStream out) throws IOException, InterruptedException {
-        out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE, RESET_TEXT_ITALIC);
+        out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ",
+                SET_TEXT_COLOR_BLUE,
+                SET_TEXT_COLOR_MAGENTA,
+                SET_TEXT_ITALIC,
+                SET_TEXT_COLOR_BLUE,
+                RESET_TEXT_ITALIC);
         Scanner myScan = new Scanner(System.in);
         int gameId = myScan.nextInt();
         String color = myScan.next();
@@ -271,9 +286,9 @@ public class ClientMain {
     }
 
     private static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range){
-        String TEXT_COLOR;
-        String BG_COLOR;
-        String TEXT_BOLD;
+        String textColor;
+        String bgColor;
+        String textBold;
         char p;
         out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
@@ -287,25 +302,25 @@ public class ClientMain {
                 if(isLower(board[r][c])){
                     // black pieces
                     p = toUpper(board[r][c]);
-                    TEXT_COLOR = SET_TEXT_COLOR_BLUE;
-                    TEXT_BOLD = SET_TEXT_BOLD;
+                    textColor = SET_TEXT_COLOR_BLUE;
+                    textBold = SET_TEXT_BOLD;
                 }
                 else{
                     // white pieces
                     p = board[r][c];
-                    TEXT_COLOR = SET_TEXT_COLOR_WHITE;
-                    TEXT_BOLD = RESET_TEXT_BOLD_FAINT;
+                    textColor = SET_TEXT_COLOR_WHITE;
+                    textBold = RESET_TEXT_BOLD_FAINT;
                 }
                 if(r % 2 == 0 && c % 2 == 0){
-                    BG_COLOR = SET_BG_COLOR_DARK_GREY;
+                    bgColor = SET_BG_COLOR_DARK_GREY;
                 }
                 else if(r % 2 != 0 && c % 2 != 0){
-                    BG_COLOR = SET_BG_COLOR_DARK_GREY;
+                    bgColor = SET_BG_COLOR_DARK_GREY;
                 }
                 else{
-                    BG_COLOR = SET_BG_COLOR_LIGHT_GREY;
+                    bgColor = SET_BG_COLOR_LIGHT_GREY;
                 }
-                out.printf("%s %s%s%s ", BG_COLOR, TEXT_COLOR, TEXT_BOLD, p);
+                out.printf("%s %s%s%s ", bgColor, textColor, textBold, p);
                 out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
             }
             out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - r);

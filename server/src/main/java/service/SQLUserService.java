@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import exception.DataAccessException;
+import exception.MissingDataException;
+import exception.NameTakenException;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;

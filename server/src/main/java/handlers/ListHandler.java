@@ -1,7 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
+import exception.DataAccessException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

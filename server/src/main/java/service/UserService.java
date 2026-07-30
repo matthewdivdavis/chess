@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import exception.DataAccessException;
+import exception.MissingDataException;
+import exception.NameTakenException;
 import model.AuthData;
 import model.GameData;
 import response.*;
@@ -22,7 +25,7 @@ public class UserService implements ClearService,
 
     }
     @Override
-    public RegisterResult register(RegisterRequest request) throws DataAccessException{
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
         // check to make sure user and pass are given
         if(request.username() == null || request.password() == null){
             throw new MissingDataException("username or password empty");

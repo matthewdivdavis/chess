@@ -62,7 +62,7 @@ public class ServerFacadeTests {
     @Test
     @Order(5)
     @DisplayName("List normal")
-    public void ListNorm(){
+    public void listNorm(){
         Assertions.assertDoesNotThrow(ServerFacade::clear);
         Assertions.assertDoesNotThrow(() -> {
             ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));

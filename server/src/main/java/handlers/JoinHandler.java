@@ -1,9 +1,9 @@
 package handlers;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.MissingDataException;
-import dataaccess.NameTakenException;
+import exception.DataAccessException;
+import exception.MissingDataException;
+import exception.NameTakenException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

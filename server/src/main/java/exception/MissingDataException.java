@@ -1,4 +1,4 @@
-package dataaccess;
+package exception;
 
 public class MissingDataException extends DataAccessException {
     public MissingDataException(String message) {

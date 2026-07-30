@@ -1,6 +1,6 @@
 package servicesql;
 
-import dataaccess.DataAccessException;
+import exception.DataAccessException;
 import exception.ResponseException;
 import request.LogoutRequest;
 import response.LogoutResult;

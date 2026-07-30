@@ -1,18 +1,11 @@
 package dataaccess;
 
-import com.google.gson.Gson;
+import exception.DataAccessException;
 import exception.ResponseException;
 import model.*;
-import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
-import service.SQLUserService;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class MySqlDataAccess implements DataAccess{
 
