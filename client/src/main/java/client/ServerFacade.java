@@ -15,7 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerFacade {
-    private static int port;
+    private static int port = 8080;
     private static final String SERVER_URL = "http://localhost:";
     private static String authorization;
 

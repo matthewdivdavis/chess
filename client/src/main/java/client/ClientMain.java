@@ -28,7 +28,7 @@ public class ClientMain {
             if(preLogin(out) == 1){
                 quit = true;
             }
-            if(postLogin(out) == 1){
+            else if(postLogin(out) == 1){
                 quit = true;
             }
         }
@@ -235,8 +235,32 @@ public class ClientMain {
                 SET_TEXT_COLOR_BLUE,
                 RESET_TEXT_ITALIC);
         Scanner myScan = new Scanner(System.in);
-        int gameId = myScan.nextInt();
+        int gameId;
+        while(true){
+            try {
+                gameId = myScan.nextInt();
+                break;
+            } catch (Exception e) {
+                out.printf("%sInvalid ID input. Please try again: ", SET_TEXT_COLOR_BLUE);
+                myScan.next();
+            }
+        }
         String color = myScan.next();
+        while(true){
+            if(!color.equals("BLACK") && !color.equals("WHITE")){
+                out.printf("%sInvalid color input. Please choose color again (%s%sBLACK or WHITE%s%s): ",
+                        SET_TEXT_COLOR_BLUE,
+                        SET_TEXT_COLOR_MAGENTA,
+                        SET_TEXT_ITALIC,
+                        RESET_TEXT_ITALIC,
+                        SET_TEXT_COLOR_BLUE);
+                color = myScan.next();
+            }
+            else{
+                break;
+            }
+        }
+
         HttpResponse<String> response = ServerFacade.join(gameId, color);
         if(response.statusCode() == 200){
             GameResult game = getGame(out, gameId);
@@ -285,7 +309,7 @@ public class ClientMain {
         ServerFacade.clear();
     }
 
-    private static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range){
+    private static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range, int[] cols){
         String textColor;
         String bgColor;
         String textBold;
@@ -295,35 +319,38 @@ public class ClientMain {
             out.printf(" %s ", l);
         }
         int r = 0;
+        int b = 0;
         out.printf("   %s\n", RESET_BG_COLOR);
         for(int a : range){
-            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - r);
-            for(int c = 0; c < 8; c++){
-                if(isLower(board[r][c])){
+            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
+            for(int c : cols){
+                if(isLower(board[r][b])){
                     // black pieces
-                    p = toUpper(board[r][c]);
+                    p = toUpper(board[r][b]);
                     textColor = SET_TEXT_COLOR_BLUE;
                     textBold = SET_TEXT_BOLD;
                 }
                 else{
                     // white pieces
-                    p = board[r][c];
+                    p = board[r][b];
                     textColor = SET_TEXT_COLOR_WHITE;
                     textBold = RESET_TEXT_BOLD_FAINT;
                 }
-                if(r % 2 == 0 && c % 2 == 0){
-                    bgColor = SET_BG_COLOR_DARK_GREY;
+                if(a % 2 == 0 && c % 2 == 0){
+                    bgColor = SET_BG_COLOR_LIGHT_GREY;
                 }
-                else if(r % 2 != 0 && c % 2 != 0){
-                    bgColor = SET_BG_COLOR_DARK_GREY;
+                else if(a % 2 != 0 && c%2 != 0){
+                    bgColor = SET_BG_COLOR_LIGHT_GREY;
                 }
                 else{
-                    bgColor = SET_BG_COLOR_LIGHT_GREY;
+                    bgColor = SET_BG_COLOR_DARK_GREY;
                 }
                 out.printf("%s %s%s%s ", bgColor, textColor, textBold, p);
                 out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
+                b++;
             }
-            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - r);
+            b = 0;
+            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
             out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
             r++;
         }
@@ -336,17 +363,18 @@ public class ClientMain {
 
     private static void printGameBlack(PrintStream out){
         char[][] board = {
-                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
+                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'},
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
-                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',}};
+                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r',}};
         char[] lets = {'h', 'g', 'f', 'e', 'd', 'c', 'b' ,'a'};
         int[] range = {7, 6, 5, 4, 3, 2, 1, 0};
-        printBoard(out, board, lets, range);
+        int[] cols = {7, 6, 5, 4, 3, 2, 1, 0};
+        printBoard(out, board, lets, range, cols);
     }
 
     private static void printGameWhite(PrintStream out){
@@ -361,7 +389,8 @@ public class ClientMain {
                 {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}};
         char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
-        printBoard(out, board, lets, range);
+        int[] cols = {0, 1, 2, 3, 4, 5, 6, 7};
+        printBoard(out, board, lets, range, cols);
     }
 
     private static char toUpper(char c){
