@@ -15,7 +15,7 @@ import java.net.http.HttpResponse;
 
 public class ServerFacade {
     private static int port;
-    private static final String ServerUrl = "http://localhost:";
+    private static final String SERVER_URL = "http://localhost:";
     private static String authorization;
 
     public ServerFacade(int port){
@@ -30,7 +30,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/user"))
+                .uri(URI.create(SERVER_URL + port + "/user"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -43,7 +43,7 @@ public class ServerFacade {
     public static void clear() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/db"))
+                .uri(URI.create(SERVER_URL + port + "/db"))
                 .header("Content-Type", "application/json")
                 .DELETE()
                 .build();
@@ -57,7 +57,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/session"))
+                .uri(URI.create(SERVER_URL + port + "/session"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -74,7 +74,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/game"))
+                .uri(URI.create(SERVER_URL + port + "/game"))
                 .header("Authorization", authorization)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -88,7 +88,7 @@ public class ServerFacade {
     public static HttpResponse<String> list() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/game"))
+                .uri(URI.create(SERVER_URL + port + "/game"))
                 .header("Authorization", authorization)
                 .GET()
                 .build();
@@ -98,7 +98,7 @@ public class ServerFacade {
     public static HttpResponse<String> logout() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/session"))
+                .uri(URI.create(SERVER_URL + port + "/session"))
                 .header("Authorization", authorization)
                 .DELETE()
                 .build();
@@ -114,7 +114,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ServerUrl + port + "/game"))
+                .uri(URI.create(SERVER_URL + port + "/game"))
                 .header("Authorization", authorization)
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
