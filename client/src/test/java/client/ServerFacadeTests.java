@@ -1,13 +1,9 @@
 package client;
 
-import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
-import server.LoginRequest;
-import server.RegisterRequest;
+import request.LoginRequest;
+import request.RegisterRequest;
 import server.Server;
-
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 
 public class ServerFacadeTests {

@@ -2,8 +2,8 @@ package servicesql;
 
 import dataaccess.DataAccessException;
 import exception.ResponseException;
-import server.RegisterRequest;
-import service.RegisterResult;
+import request.RegisterRequest;
+import response.RegisterResult;
 
 public interface RegisterService {
     RegisterResult register(RegisterRequest request) throws DataAccessException, ResponseException;

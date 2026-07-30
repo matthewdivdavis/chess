@@ -5,8 +5,9 @@ import dataaccess.DataAccessException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import server.ListRequest;
-import service.*;
+import request.ListRequest;
+import response.GameResult;
+import response.ListGamesResult;
 import servicesql.ListService;
 
 import java.util.ArrayList;

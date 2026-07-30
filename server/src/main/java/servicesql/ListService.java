@@ -2,8 +2,8 @@ package servicesql;
 
 import dataaccess.DataAccessException;
 import exception.ResponseException;
-import server.ListRequest;
-import service.GameResult;
+import request.ListRequest;
+import response.GameResult;
 
 import java.util.ArrayList;
 

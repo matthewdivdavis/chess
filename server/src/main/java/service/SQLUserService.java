@@ -5,8 +5,9 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import server.*;
+import response.*;
 import servicesql.*;
+import request.*;
 
 import java.util.ArrayList;
 

@@ -2,8 +2,8 @@ package servicesql;
 
 import dataaccess.DataAccessException;
 import exception.ResponseException;
-import server.LogoutRequest;
-import service.LogoutResult;
+import request.LogoutRequest;
+import response.LogoutResult;
 
 public interface LogoutService {
     LogoutResult logout(LogoutRequest request) throws DataAccessException, ResponseException;

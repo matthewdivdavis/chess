@@ -1,6 +1,5 @@
-package server;
+package request;
 
-import chess.ChessGame;
 import org.jetbrains.annotations.NotNull;
 
 public record JoinRequest(String playerColor, int gameID) {

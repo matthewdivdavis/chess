@@ -2,7 +2,12 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.MissingDataException;
 import org.junit.jupiter.api.*;
-import server.*;
+import request.CreateRequest;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import response.LoginResult;
+import response.RegisterResult;
 
 public class ServiceTests {
 

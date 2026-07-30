@@ -2,13 +2,13 @@ package handlers;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import server.CreateRequest;
+import request.CreateRequest;
 import dataaccess.DataAccessException;
 import dataaccess.MissingDataException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import server.GameRequest;
-import service.*;
+import request.GameRequest;
+import response.CreateResult;
 import servicesql.CreateService;
 
 import java.util.Map;

@@ -6,8 +6,8 @@ import dataaccess.MissingDataException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import server.*;
-import service.*;
+import request.RegisterRequest;
+import response.RegisterResult;
 import servicesql.RegisterService;
 
 import java.util.Map;

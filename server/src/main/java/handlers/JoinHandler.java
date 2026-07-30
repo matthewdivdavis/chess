@@ -7,8 +7,8 @@ import dataaccess.NameTakenException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import server.JoinRequest;
-import service.JoinResult;
+import request.JoinRequest;
+import response.JoinResult;
 import servicesql.JoinService;
 
 import java.util.Map;

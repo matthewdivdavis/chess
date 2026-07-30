@@ -1,6 +1,6 @@
-package service;
+package response;
 
-import dataaccess.MemoryGameDAO;
+//import dataaccess.MemoryGameDAO;
 import model.GameData;
 
 public class GameResult {

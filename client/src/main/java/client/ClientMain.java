@@ -2,9 +2,10 @@ package client;
 
 import chess.*;
 import com.google.gson.Gson;
+import request.LoginRequest;
+import request.RegisterRequest;
+import response.*;
 import server.*;
-
-import service.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -20,18 +21,17 @@ public class ClientMain {
     public ClientMain(){
     }
     public static void main(String[] args) throws Exception {
-        server = new Server();
-        var port = server.run(8080);
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        if(preLogin(out) == 1){
-            server.stop();
-            return;
-        }
-        if(postLogin(out) == 1){
-            server.stop();
-            return;
+        boolean quit = false;
+        while(!quit){
+            if(preLogin(out) == 1){
+                quit = true;
+            }
+            if(postLogin(out) == 1){
+                quit = true;
+            }
         }
     }
 
@@ -190,6 +190,9 @@ public class ClientMain {
                 }
                 return null;
             }
+            if(result.games().size() < 1){
+                out.printf("%sNo games. Please create a game and try again.\n", SET_TEXT_COLOR_MAGENTA);
+            }
             for(var game : result.games()){
                 out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
             }
@@ -268,7 +271,7 @@ public class ClientMain {
         ServerFacade.clear();
     }
 
-    public static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range){
+    private static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range){
         String TEXT_COLOR;
         String BG_COLOR;
         String TEXT_BOLD;
@@ -317,7 +320,7 @@ public class ClientMain {
         out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
     }
 
-    public static void printGameBlack(PrintStream out){
+    private static void printGameBlack(PrintStream out){
         char[][] board = {
                 {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
@@ -332,7 +335,7 @@ public class ClientMain {
         printBoard(out, board, lets, range);
     }
 
-    public static void printGameWhite(PrintStream out){
+    private static void printGameWhite(PrintStream out){
         char[][] board = {
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',},
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},

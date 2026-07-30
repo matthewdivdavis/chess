@@ -1,6 +1,5 @@
 package dataaccess;
 
-import server.RegisterRequest;
 import model.*;
 
 public class AuthDAO {

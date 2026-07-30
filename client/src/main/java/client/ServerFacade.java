@@ -1,8 +1,11 @@
 package client;
 import com.google.gson.Gson;
-import server.*;
-import service.LoginResult;
-import service.RegisterResult;
+import request.CreateRequest;
+import request.JoinRequest;
+import request.LoginRequest;
+import request.RegisterRequest;
+import response.LoginResult;
+import response.RegisterResult;
 
 import java.io.IOException;
 import java.net.URI;

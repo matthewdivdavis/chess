@@ -5,8 +5,8 @@ import dataaccess.DataAccessException;
 import exception.ResponseException;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import server.LogoutRequest;
-import service.LogoutResult;
+import request.LogoutRequest;
+import response.LogoutResult;
 import servicesql.LogoutService;
 
 import java.util.Map;
