@@ -1,5 +1,6 @@
 package client;
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import request.CreateRequest;
 import request.JoinRequest;
 import request.LoginRequest;
@@ -51,7 +52,12 @@ public class ServerFacade {
     }
 
     public static HttpResponse<String> login(LoginRequest req) throws Exception{
-
+        if(req.username() == null){
+            throw new DataAccessException("null username");
+        }
+        if(req.password() == null){
+            throw new DataAccessException("null password");
+        }
         Gson gson = new Gson();
         String json = gson.toJson(req);
 
@@ -67,7 +73,10 @@ public class ServerFacade {
         authorization = result.authToken();
         return response;
     }
-    public static HttpResponse<String> create(String gameName) throws IOException, InterruptedException {
+    public static HttpResponse<String> create(String gameName) throws Exception {
+        if(gameName == null){
+            throw new DataAccessException("GameName null");
+        }
         CreateRequest req = new CreateRequest(authorization, gameName);
         Gson gson = new Gson();
         String json = gson.toJson(req);
@@ -103,11 +112,15 @@ public class ServerFacade {
                 .DELETE()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        authorization = "";
+        authorization = null;
         return response;
     }
 
-    public static HttpResponse<String> join(int gameId, String color) throws IOException, InterruptedException {
+    public static HttpResponse<String> join(int gameId, String color) throws  Exception {
+        if(!color.equals("BLACK") && !color.equals("WHITE")){
+            throw new DataAccessException("Invalid color");
+        }
+
         JoinRequest req = new JoinRequest(color, gameId);
         Gson gson = new Gson();
         String json = gson.toJson(req);

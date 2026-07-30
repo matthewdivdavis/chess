@@ -34,7 +34,7 @@ public class ClientMain {
         }
     }
 
-    private static int postLogin(PrintStream out) throws IOException, InterruptedException {
+    private static int postLogin(PrintStream out) throws Exception {
         Scanner myScan = new Scanner(System.in);
         while(true){
             out.printf(SET_TEXT_COLOR_LIGHT_GREY);
@@ -163,7 +163,7 @@ public class ClientMain {
         return false;
     }
 
-    private static boolean create(PrintStream out) throws IOException, InterruptedException {
+    private static boolean create(PrintStream out) throws Exception {
         out.printf("%sInput a game name: ", SET_TEXT_COLOR_BLUE);
         Scanner myScan = new Scanner(System.in);
         String gameName = myScan.next();
@@ -227,7 +227,7 @@ public class ClientMain {
         return true;
     }
 
-    private static boolean join(PrintStream out) throws IOException, InterruptedException {
+    private static boolean join(PrintStream out) throws Exception {
         out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ",
                 SET_TEXT_COLOR_BLUE,
                 SET_TEXT_COLOR_MAGENTA,
@@ -260,7 +260,7 @@ public class ClientMain {
         return true;
     }
 
-    private static boolean logout(PrintStream out) throws IOException, InterruptedException {
+    private static boolean logout(PrintStream out) throws Exception {
         HttpResponse<String> response = ServerFacade.logout();
         if(response.statusCode() == 200){
             return true;
