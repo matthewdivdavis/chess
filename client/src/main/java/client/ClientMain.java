@@ -5,17 +5,17 @@ import com.google.gson.Gson;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.*;
-//import server.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
 import static ui.EscapeSequences.*;
 
 public class ClientMain {
+
+    public static String playerColor;
 
     public ClientMain(){
     }
@@ -270,9 +270,11 @@ public class ClientMain {
             }
             out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
             if(color.equals("BLACK")){
+                playerColor = "BLACK";
                 printGameBlack(out);
             }
             else{
+                playerColor = "WHITE";
                 printGameWhite(out);
             }
         }
@@ -309,68 +311,74 @@ public class ClientMain {
         ServerFacade.clear();
     }
 
-    private static void printBoard(PrintStream out, char[][] board, char[] lets, int[] range, int[] cols){
+    private static void printBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols){
         String textColor;
         String bgColor;
         String textBold;
-        char p;
-        out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        String LIGHT_BOARD = SET_BG_COLOR_WHITE;
+        String DARK_BOARD = SET_BG_COLOR_BROWN;
+        String BORDER_COLOR = SET_BG_COLOR_LIGHT_GREY;
+        String p;
+        out.printf("%s   %s%s", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
-            out.printf(" %s ", l);
+            out.printf("  %s  ", l);
         }
         int r = 0;
         int b = 0;
         out.printf("   %s\n", RESET_BG_COLOR);
         for(int a : range){
-            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
+            out.printf("%s %s%s%d ", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
             for(int c : cols){
-                if(isLower(board[r][b])){
-                    // black pieces
-                    p = toUpper(board[r][b]);
-                    textColor = SET_TEXT_COLOR_BLUE;
-                    textBold = SET_TEXT_BOLD;
-                }
-                else{
-                    // white pieces
-                    p = board[r][b];
-                    textColor = SET_TEXT_COLOR_WHITE;
-                    textBold = RESET_TEXT_BOLD_FAINT;
-                }
+                textColor = SET_TEXT_COLOR_BLACK;
+                textBold = SET_TEXT_BOLD;
+                p = board[r][b];
+//                if(isLower(board[r][b])){
+//                    // black pieces
+//                    p = toUpper(board[r][b]);
+//                    textColor = SET_TEXT_COLOR_BLUE;
+//                    textBold = SET_TEXT_BOLD;
+//                }
+//                else{
+//                    // white pieces
+//                    p = board[r][b];
+//                    textColor = SET_TEXT_COLOR_WHITE;
+//                    textBold = RESET_TEXT_BOLD_FAINT;
+//                }
                 if(a % 2 == 0 && c % 2 == 0){
-                    bgColor = SET_BG_COLOR_LIGHT_GREY;
+                    bgColor = LIGHT_BOARD;
                 }
                 else if(a % 2 != 0 && c%2 != 0){
-                    bgColor = SET_BG_COLOR_LIGHT_GREY;
+                    bgColor = LIGHT_BOARD;
                 }
                 else{
-                    bgColor = SET_BG_COLOR_DARK_GREY;
+                    bgColor = DARK_BOARD;
                 }
                 out.printf("%s %s%s%s ", bgColor, textColor, textBold, p);
                 out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
                 b++;
             }
             b = 0;
-            out.printf("%s %s%s%d ", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
+            out.printf("%s %s%s%d ", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
             out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
             r++;
         }
-        out.printf("%s   %s%s", SET_BG_COLOR_WHITE, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        out.printf("%s   %s%s", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
-            out.printf(" %s ", l);
+            out.printf("  %s  ", l);
         }
         out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
     }
 
     private static void printGameBlack(PrintStream out){
-        char[][] board = {
-                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
-                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r',}};
+        String[][] board = {
+                {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK},
+                {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
+                {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},};
         char[] lets = {'h', 'g', 'f', 'e', 'd', 'c', 'b' ,'a'};
         int[] range = {7, 6, 5, 4, 3, 2, 1, 0};
         int[] cols = {7, 6, 5, 4, 3, 2, 1, 0};
@@ -378,15 +386,15 @@ public class ClientMain {
     }
 
     private static void printGameWhite(PrintStream out){
-        char[][] board = {
-                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',},
-                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}};
+        String[][] board = {
+                {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
+                {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
+                {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}};
         char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
         int[] cols = {0, 1, 2, 3, 4, 5, 6, 7};
