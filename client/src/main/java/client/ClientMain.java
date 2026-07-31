@@ -107,6 +107,14 @@ public class ClientMain {
         out.printf("%s\thelp %s- with possible commands\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
         out.printf(SET_TEXT_COLOR_LIGHT_GREY);
     }
+    private static void helpGamePlay(PrintStream out){
+        out.printf("%s\tmove <COLUMN ROW> %s- to make a chess move\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
+        out.printf("%s\thighlight %s- highlight all legal moves\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
+        out.printf("%s\tleave %s- leave game\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
+        out.printf("%s\tresign %s- admit defeat and give the win to your opponent (rip)\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
+        out.printf("%s\tredraw %s- redraw the chessboard\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
+        out.printf(SET_TEXT_COLOR_LIGHT_GREY);
+    }
 
     private static boolean login(PrintStream out) throws Exception {
         out.printf("%sInput your username and password (%s%susername password%s%s): ",
@@ -227,7 +235,7 @@ public class ClientMain {
         return true;
     }
 
-    private static boolean join(PrintStream out) throws Exception {
+    private static void join(PrintStream out) throws Exception {
         out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ",
                 SET_TEXT_COLOR_BLUE,
                 SET_TEXT_COLOR_MAGENTA,
@@ -239,6 +247,9 @@ public class ClientMain {
         while(true){
             try {
                 gameId = myScan.nextInt();
+                if(gameId < 1){
+                    out.printf("%sInvalid ID input. Please try again: ", SET_TEXT_COLOR_BLUE);
+                }
                 break;
             } catch (Exception e) {
                 out.printf("%sInvalid ID input. Please try again: ", SET_TEXT_COLOR_BLUE);
@@ -260,13 +271,20 @@ public class ClientMain {
                 break;
             }
         }
-
-        HttpResponse<String> response = ServerFacade.join(gameId, color);
+        ServerFacade.join(gameId, color);
+        HttpResponse<String> response = ServerFacade.list();
         if(response.statusCode() == 200){
-            GameResult game = getGame(out, gameId);
+            GameResult game = null;
+            Gson gson = new Gson();
+            ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
+            for(GameResult g : result.games()){
+                if(g.getGameID() == gameId){
+                    game = g;
+                }
+            }
             if(game == null){
                 out.printf("%sCould not find game %d. Please Try again.\n", SET_TEXT_COLOR_MAGENTA, gameId);
-                return false;
+                return;
             }
             out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
             if(color.equals("BLACK")){
@@ -277,13 +295,49 @@ public class ClientMain {
                 playerColor = "WHITE";
                 printGameWhite(out);
             }
+            gamePlay(out);
         }
         else{
             Gson gson = new Gson();
             ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
             System.out.println(result.message());
         }
-        return true;
+    }
+
+    private static void gamePlay(PrintStream out){
+        out.printf("%sType 'help' to list commands.\n", SET_TEXT_COLOR_LIGHT_GREY);
+        while(true){
+            out.printf("%s[GAME PLAY] >>> ", SET_TEXT_COLOR_LIGHT_GREY);
+            Scanner myScan = new Scanner(System.in);
+            String userIn = myScan.next();
+            if(userIn.equals("help")){
+                helpGamePlay(out);
+            }
+            else if(userIn.equals("resign")){
+                out.printf("%sAre you sure you wish to resign? (%s%sy or n%s%s): %s",
+                        SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
+                        SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY);
+                if(myScan.next().equals("y")){
+                    return;
+                }
+            }
+//            else if(userIn.equals("leave")){
+//
+//            }
+//            else if(userIn.equals("move")){
+//
+//            }
+//            else if(userIn.equals("highlight")){
+//
+//            }
+            else if(userIn.equals("redraw")){
+                if(playerColor.equals("BLACK")){
+                    printGameBlack(out);
+                }else{
+                    printGameWhite(out);
+                }
+            }
+        }
     }
 
     private static boolean logout(PrintStream out) throws Exception {
@@ -332,18 +386,6 @@ public class ClientMain {
                 textColor = SET_TEXT_COLOR_BLACK;
                 textBold = SET_TEXT_BOLD;
                 p = board[r][b];
-//                if(isLower(board[r][b])){
-//                    // black pieces
-//                    p = toUpper(board[r][b]);
-//                    textColor = SET_TEXT_COLOR_BLUE;
-//                    textBold = SET_TEXT_BOLD;
-//                }
-//                else{
-//                    // white pieces
-//                    p = board[r][b];
-//                    textColor = SET_TEXT_COLOR_WHITE;
-//                    textBold = RESET_TEXT_BOLD_FAINT;
-//                }
                 if(a % 2 == 0 && c % 2 == 0){
                     bgColor = LIGHT_BOARD;
                 }
@@ -400,22 +442,4 @@ public class ClientMain {
         int[] cols = {0, 1, 2, 3, 4, 5, 6, 7};
         printBoard(out, board, lets, range, cols);
     }
-
-    private static char toUpper(char c){
-        if(c >= 'A' && c <= 'Z'){
-            return c;
-        }
-        else if(c >= 'a' && c <= 'z'){
-            return (char) (c-32);
-        }
-        return c;
-    }
-
-    private static boolean isLower(char c){
-        if(c >= 'A' && c <= 'Z'){
-            return false;
-        }
-        return true;
-    }
-
 }

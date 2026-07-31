@@ -120,7 +120,6 @@ public class ServerFacade {
         if(!color.equals("BLACK") && !color.equals("WHITE")){
             throw new DataAccessException("Invalid color");
         }
-
         JoinRequest req = new JoinRequest(color, gameId);
         Gson gson = new Gson();
         String json = gson.toJson(req);

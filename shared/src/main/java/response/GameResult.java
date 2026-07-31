@@ -1,6 +1,7 @@
 package response;
 
 //import dataaccess.MemoryGameDAO;
+import chess.ChessGame;
 import model.GameData;
 
 public class GameResult {
@@ -8,11 +9,13 @@ public class GameResult {
     String whiteUsername;
     String blackUsername;
     String gameName;
+//    ChessGame game;
     public GameResult(GameData game){
         gameID = game.getGameID();
         whiteUsername = game.getWhiteUsername();
         blackUsername = game.getBlackUsername();
         gameName = game.getGameName();
+//        this.game = game.getGame();
     }
 
     public int getGameID(){
