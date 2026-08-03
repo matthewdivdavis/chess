@@ -6,6 +6,7 @@ import io.javalin.*;
 import io.javalin.http.Handler;
 import service.SQLUserService;
 import service.UserService;
+import websocket.WebSocketHandler;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -16,16 +17,13 @@ public class Server {
 
     public Server() {
 
+        webSocketHandler = new WebSocketHandler();
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .ws("/ws", ws -> {
-                    ws.onConnect(WebSocketHandler);
-                    ws.onMessage(ctx ->{
-                        System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
-                        UserGameCommand userGameCommand = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                                userGameCommand.getGameID())));
-                    });
-                    ws.onClose(ctx -> System.out.println("Websocket Closed"));
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
                 });
 
         SQLUserService userService = new SQLUserService();
