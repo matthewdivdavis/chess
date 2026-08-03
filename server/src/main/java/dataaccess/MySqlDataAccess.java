@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import exception.DataAccessException;
 import exception.ResponseException;
 import model.*;
@@ -133,9 +135,11 @@ public class MySqlDataAccess implements DataAccess{
         }
     }
     public int createGame(String gameName) throws ResponseException{
-        var statement = "INSERT INTO gamedata (gameName) VALUES(?)";
+        ChessGame game = new ChessGame();
+        Gson gson = new Gson();
+        var statement = "INSERT INTO gamedata (gameName, gameJson) VALUES(?, ?)";
         try{
-            return executeGameUpdate(statement, gameName);
+            return executeGameUpdate(statement, gameName, gson.toJson(game));
         } catch (ResponseException e){
             throw new ResponseException(ResponseException.Code.ServerError,
                     String.format("unable to update database: %s, %s", statement, e.getMessage()));
@@ -159,10 +163,26 @@ public class MySqlDataAccess implements DataAccess{
         return null;
     }
 
-    private int executeGameUpdate(String statement, String gameName) throws ResponseException {
+    public void updateGame(int gameId, ChessGame game) {
+        Gson gson = new Gson();
+
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gamedata SET gameJson=? WHERE gameId=?";
+            try(PreparedStatement p = conn.prepareStatement(statement)){
+                p.setString(1, gson.toJson(game));
+                p.setInt(2, gameId);
+                p.executeUpdate();
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int executeGameUpdate(String statement, String gameName, String gameJson) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement p = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
                 p.setString(1, gameName);
+                p.setString(2, gameJson);
                 p.executeUpdate();
                 try (ResultSet rs = p.getGeneratedKeys()) {
                     if (rs.next()) {
@@ -241,7 +261,7 @@ public class MySqlDataAccess implements DataAccess{
             `blackUsername` varchar(256) DEFAULT NULL,
             `whiteUsername` varchar(256) DEFAULT NULL,
             `gameName` varchar(256) NOT NULL,
-            `gameJson` TEXT DEFAULT NULL,
+            `gameJson` text NOT NULL,
             PRIMARY KEY (`gameId`),
             INDEX(blackUsername),
             INDEX(whiteUsername),

@@ -11,9 +11,12 @@ public class SimpleWsEchoServer {
                         ctx.enableAutomaticPings();
                         System.out.println("Websocket connected");
                     });
-                    ws.onMessage(ctx -> ctx.send("WebSocket response:" + ctx.message()));
+                    ws.onMessage(ctx -> {
+                        System.out.println(ctx.message());
+                        ctx.send("WebSocket response: " + ctx.message());
+                    });
                     ws.onClose(ctx -> System.out.println("Websocket closed"));
                 })
-                .start(8080);
+                .start(8000);
     }
 }

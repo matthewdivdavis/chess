@@ -26,7 +26,7 @@ public class WsEchoClient extends Endpoint {
     }
 
     public WsEchoClient() throws Exception {
-        URI uri = new URI("ws://localhost:8080/ws");
+        URI uri = new URI("ws://localhost:8000/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         session = container.connectToServer(this, uri);
 
@@ -43,6 +43,7 @@ public class WsEchoClient extends Endpoint {
     }
 
     // This method must be overridden, but we don't have to do anything with it
+    @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 }

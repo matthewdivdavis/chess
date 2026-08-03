@@ -11,7 +11,15 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> config.staticFiles.add("web"))
+                .ws("/ws", ws -> {
+                    ws.onConnect(ctx -> {
+                        ctx.enableAutomaticPings();
+                        System.out.println("Websocket connected");
+                    });
+                    ws.onMessage(ctx -> ctx.send("Websocket response: " + ctx.message()));
+                    ws.onClose(ctx -> System.out.println("Websocket Closed"));
+                });
 
         SQLUserService userService = new SQLUserService();
 

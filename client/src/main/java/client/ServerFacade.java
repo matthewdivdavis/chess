@@ -12,14 +12,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerFacade {
-    private static int port = 8080;
-    private static final String SERVER_URL = "http://localhost:";
+    private static String serverUrl;
     private static String authorization;
 
-    public ServerFacade(int port){
-        this.port = port;
-    }
-    public static void main(String[] args){
+    public ServerFacade(String url){
+        serverUrl = url;
     }
 
     public static HttpResponse<String> register(RegisterRequest req) throws Exception{
@@ -28,7 +25,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/user"))
+                .uri(URI.create(serverUrl + "/user"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -41,7 +38,7 @@ public class ServerFacade {
     public static void clear() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/db"))
+                .uri(URI.create(serverUrl + "/db"))
                 .header("Content-Type", "application/json")
                 .DELETE()
                 .build();
@@ -60,7 +57,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/session"))
+                .uri(URI.create(serverUrl + "/session"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -80,7 +77,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/game"))
+                .uri(URI.create(serverUrl + "/game"))
                 .header("Authorization", authorization)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -94,7 +91,7 @@ public class ServerFacade {
     public static HttpResponse<String> list() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/game"))
+                .uri(URI.create(serverUrl + "/game"))
                 .header("Authorization", authorization)
                 .GET()
                 .build();
@@ -104,7 +101,7 @@ public class ServerFacade {
     public static HttpResponse<String> logout() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/session"))
+                .uri(URI.create(serverUrl + "/session"))
                 .header("Authorization", authorization)
                 .DELETE()
                 .build();
@@ -123,7 +120,7 @@ public class ServerFacade {
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/game"))
+                .uri(URI.create(serverUrl +  "/game"))
                 .header("Authorization", authorization)
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
@@ -131,18 +128,6 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static HttpResponse<String> move(MoveRequest req) throws Exception{
-        Gson gson = new Gson();
-        String json = gson.toJson(req);
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(SERVER_URL + port + "/game"))
-                .header("Authorization", authorization)
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
 
     public static void highlight(HighlightRequest req) throws Exception{
 
