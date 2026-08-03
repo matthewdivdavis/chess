@@ -386,34 +386,61 @@ public class ClientMain {
         out.println("col = " + col+ "\nrow = " + row);
     }
 
-    private static List<Character> validateMoveHighlight(PrintStream out){
+    private static List<Character> validateMoveMakeMove(PrintStream out){
         List<Character> result = new ArrayList<>();
         Scanner myScan = new Scanner(System.in);
-        char col;
-        char fill;
-        col = myScan.next().charAt(0);
-        fill = myScan.next().charAt(0);
+        char oldCol;
+        char oldRow;
+        char newCol;
+        char newRow;
+        oldCol = myScan.next().charAt(0);
+        oldRow = myScan.next().charAt(0);
+        newCol = myScan.next().charAt(0);
+        newRow = myScan.next().charAt(0);
         while(true){
-            if((col > 64 && col < 73)
-                    || (col > 96 && col < 105)){
-                col = toLower(col);
-                result.add(col);
+            if((oldCol > 64 && oldCol < 73)
+                    || (oldCol > 96 && oldCol < 105)){
+                oldCol = toLower(oldCol);
+                result.add(oldCol);
                 break;
             } else {
-                out.printf("%sInvalid input column. Input a single letter between a-h: ",
+                out.printf("%sInvalid first input column. Input a single letter between a-h: ",
                         SET_TEXT_COLOR_BLUE);
-                col = myScan.next().charAt(0);
+                oldCol = myScan.next().charAt(0);
             }
         }
         while (true) {
-            if(fill > 48 && fill < 57) {
-                result.add(fill);
+            if(oldRow > 48 && oldRow < 57) {
+                result.add(oldRow);
                 break;
             }
             else{
-                out.printf("%sInvalid row input. Input a single number between 1 and 8: ",
+                out.printf("%sInvalid first row input. Input a single number between 1 and 8: ",
                         SET_TEXT_COLOR_BLUE);
-                fill = myScan.next().charAt(0);
+                oldRow = myScan.next().charAt(0);
+            }
+        }
+        while(true){
+            if((newCol > 64 && newCol < 73)
+                    || (newCol > 96 && newCol < 105)){
+                newCol = toLower(newCol);
+                result.add(newCol);
+                break;
+            } else {
+                out.printf("%sInvalid second input column. Input a single letter between a-h: ",
+                        SET_TEXT_COLOR_BLUE);
+                newCol = myScan.next().charAt(0);
+            }
+        }
+        while (true) {
+            if(newRow > 48 && newRow < 57) {
+                result.add(newRow);
+                break;
+            }
+            else{
+                out.printf("%sInvalid second row input. Input a single number between 1 and 8: ",
+                        SET_TEXT_COLOR_BLUE);
+                newRow = myScan.next().charAt(0);
             }
         }
         return result;
@@ -424,12 +451,11 @@ public class ClientMain {
                 SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
                 SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
                 RESET_TEXT_ITALIC);
-        List<Character> result = validateMoveInput(out);
+        List<Character> result = validateMoveMakeMove(out);
         char oldCol = result.get(0);
-        int oldRow = result.get(1);
-        result = validateMoveInput(out);
-        char newCol = result.get(0);
-        int newRow = result.get(1);
+        int oldRow = result.get(1) - '0';
+        char newCol = result.get(2);
+        int newRow = result.get(3) - '0';
         out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
     }
 
