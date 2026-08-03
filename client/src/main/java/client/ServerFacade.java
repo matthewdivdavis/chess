@@ -128,6 +128,10 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public String getAuthorization(){
+        return authorization;
+    }
+
 
     public void highlight(HighlightRequest req) throws Exception{
 

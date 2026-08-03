@@ -21,7 +21,7 @@ public class ClearHandler implements Handler {
         Gson gson = new Gson();
         try{
             userService.clear();
-            ctx.json("");
+            ctx.result("");
         } catch (DataAccessException | ResponseException e) {
             ctx.status(500);
             ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));

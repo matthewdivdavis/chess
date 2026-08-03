@@ -22,9 +22,9 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class ChessClient implements NotificationHandler{
-    private String userName = null;
+    public static String userName = null;
     private static ServerFacade server;
-    private final WebSocketFacade ws;
+    private static WebSocketFacade ws;
     public static String playerColor;
 
     public ChessClient(String serverUrl) throws ResponseException{
@@ -311,6 +311,8 @@ public class ChessClient implements NotificationHandler{
                 playerColor = "WHITE";
                 printGameWhite(out);
             }
+            // make the websocket connection here!!
+            ws.connect(gameId, server.getAuthorization());
             gamePlay(out);
         }
         else{
@@ -467,12 +469,11 @@ public class ChessClient implements NotificationHandler{
                 SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
                 RESET_TEXT_ITALIC);
         List<Character> result = validateMoveMakeMove(out);
-        char oldCol = result.get(0);
+        int oldCol = result.get(0) - 'a' + 1;
         int oldRow = result.get(1) - '0';
-        char newCol = result.get(2);
+        int newCol = result.get(2) - 'a' + 1;
         int newRow = result.get(3) - '0';
-        out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
-        WebSocketFacade.move(new MoveRequest(oldCol, oldRow, newCol, newRow));
+        ws.move(oldCol, oldRow, newCol, newRow);
     }
 
     private static boolean logout(PrintStream out) throws Exception {
