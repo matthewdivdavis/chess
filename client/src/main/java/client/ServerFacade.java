@@ -1,10 +1,7 @@
 package client;
 import com.google.gson.Gson;
 import exception.DataAccessException;
-import request.CreateRequest;
-import request.JoinRequest;
-import request.LoginRequest;
-import request.RegisterRequest;
+import request.*;
 import response.LoginResult;
 import response.RegisterResult;
 
@@ -132,5 +129,22 @@ public class ServerFacade {
                 .build();
 
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static HttpResponse<String> move(MoveRequest req) throws Exception{
+        Gson gson = new Gson();
+        String json = gson.toJson(req);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(SERVER_URL + port + "/game"))
+                .header("Authorization", authorization)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static void highlight(HighlightRequest req) throws Exception{
+
     }
 }

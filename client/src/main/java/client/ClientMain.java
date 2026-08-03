@@ -2,7 +2,9 @@ package client;
 
 import chess.*;
 import com.google.gson.Gson;
+import request.HighlightRequest;
 import request.LoginRequest;
+import request.MoveRequest;
 import request.RegisterRequest;
 import response.*;
 
@@ -306,7 +308,7 @@ public class ClientMain {
         }
     }
 
-    private static void gamePlay(PrintStream out){
+    private static void gamePlay(PrintStream out) throws Exception{
         out.printf("%sType 'help' to list commands.\n", SET_TEXT_COLOR_LIGHT_GREY);
         while(true){
             out.printf("%s[GAME PLAY] >>> ", SET_TEXT_COLOR_LIGHT_GREY);
@@ -375,7 +377,7 @@ public class ClientMain {
         return result;
     }
 
-    private static void highlightMoves(PrintStream out) {
+    private static void highlightMoves(PrintStream out) throws Exception{
         out.printf("%sInput a piece by position (%s%sCOLUMN ROW%s%s) to see it's possible moves: ",
                 SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
                 SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
@@ -384,6 +386,7 @@ public class ClientMain {
         char col = result.get(0);
         int row = result.get(1) - '0';
         out.println("col = " + col+ "\nrow = " + row);
+        ServerFacade.highlight(new HighlightRequest(col, row));
     }
 
     private static List<Character> validateMoveMakeMove(PrintStream out){
@@ -446,7 +449,7 @@ public class ClientMain {
         return result;
     }
 
-    private static void makeMove(PrintStream out){
+    private static void makeMove(PrintStream out) throws Exception{
         out.printf("%sInput piece's current position and the new desired position (%s%sCOLUMN ROW COLUMN ROW%s%s) : ",
                 SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
                 SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
@@ -457,6 +460,7 @@ public class ClientMain {
         char newCol = result.get(2);
         int newRow = result.get(3) - '0';
         out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
+        ServerFacade.move(new MoveRequest(oldCol, oldRow, newCol, newRow));
     }
 
     private static boolean logout(PrintStream out) throws Exception {
