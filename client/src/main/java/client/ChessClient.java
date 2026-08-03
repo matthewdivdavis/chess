@@ -23,7 +23,7 @@ import static ui.EscapeSequences.*;
 
 public class ChessClient implements NotificationHandler{
     private String userName = null;
-    private final ServerFacade server;
+    private static ServerFacade server;
     private final WebSocketFacade ws;
     public static String playerColor;
 
@@ -146,7 +146,7 @@ public class ChessClient implements NotificationHandler{
         LoginRequest request = new LoginRequest(username, password);
 
         Gson gson = new Gson();
-        HttpResponse<String> response = ServerFacade.login(request);
+        HttpResponse<String> response = server.login(request);
         if(response.statusCode() == 200){
             LoginResult result = gson.fromJson(response.body(), LoginResult.class);
             System.out.println("Logged in as " + username);
@@ -173,7 +173,7 @@ public class ChessClient implements NotificationHandler{
         // for sending the data
         Gson gson = new Gson();
         RegisterRequest request = new RegisterRequest(username, password, email);
-        HttpResponse<String> response = ServerFacade.register(request);
+        HttpResponse<String> response = server.register(request);
 
         if(response.statusCode() == 200){
             LoginResult result = gson.fromJson(response.body(), LoginResult.class);
@@ -194,7 +194,7 @@ public class ChessClient implements NotificationHandler{
 
         // for sending the data
         Gson gson = new Gson();
-        HttpResponse<String> response = ServerFacade.create(gameName);
+        HttpResponse<String> response = server.create(gameName);
 
         if(response.statusCode() == 200){
             CreateResult result = gson.fromJson(response.body(), CreateResult.class);
@@ -211,7 +211,7 @@ public class ChessClient implements NotificationHandler{
     private static GameResult list(PrintStream out, int gameId) throws IOException, InterruptedException {
         // for sending the data
         Gson gson = new Gson();
-        HttpResponse<String> response = ServerFacade.list();
+        HttpResponse<String> response = server.list();
 
         if(response.statusCode() == 200){
             ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
@@ -287,8 +287,8 @@ public class ChessClient implements NotificationHandler{
                 break;
             }
         }
-        ServerFacade.join(gameId, color);
-        HttpResponse<String> response = ServerFacade.list();
+        server.join(gameId, color);
+        HttpResponse<String> response = server.list();
         if(response.statusCode() == 200){
             GameResult game = null;
             Gson gson = new Gson();
@@ -398,7 +398,7 @@ public class ChessClient implements NotificationHandler{
         char col = result.get(0);
         int row = result.get(1) - '0';
         out.println("col = " + col+ "\nrow = " + row);
-        ServerFacade.highlight(new HighlightRequest(col, row));
+        server.highlight(new HighlightRequest(col, row));
     }
 
     private static List<Character> validateMoveMakeMove(PrintStream out){
@@ -476,7 +476,7 @@ public class ChessClient implements NotificationHandler{
     }
 
     private static boolean logout(PrintStream out) throws Exception {
-        HttpResponse<String> response = ServerFacade.logout();
+        HttpResponse<String> response = server.logout();
         if(response.statusCode() == 200){
             return true;
         }
@@ -497,7 +497,7 @@ public class ChessClient implements NotificationHandler{
     }
 
     private static void clear() throws Exception{
-        ServerFacade.clear();
+        server.clear();
     }
 
     private static char toLower(char let){

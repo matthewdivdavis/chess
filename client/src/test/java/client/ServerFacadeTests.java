@@ -16,6 +16,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("http:/localhost:" + port);
     }
 
     @AfterAll
@@ -28,9 +29,13 @@ public class ServerFacadeTests {
     @Order(1)
     @DisplayName("Register a new user")
     public void registerNorm(){
-        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        try {
+            facade.clear();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+            facade.register(new RegisterRequest("matt", "matt", "matt"));
         });
     }
     @Test
@@ -38,7 +43,7 @@ public class ServerFacadeTests {
     @DisplayName("Register bad")
     public void registerBad(){
         try{
-            ServerFacade.register(new RegisterRequest("matt", null, "urcool@gmail.com"));
+            facade.register(new RegisterRequest("matt", null, "urcool@gmail.com"));
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -49,7 +54,7 @@ public class ServerFacadeTests {
     @DisplayName("Register bad")
     public void registerBadUser(){
         try{
-            ServerFacade.register(new RegisterRequest(null, "matt", "urcool@gmail.com"));
+            facade.register(new RegisterRequest(null, "matt", "urcool@gmail.com"));
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -60,7 +65,7 @@ public class ServerFacadeTests {
     @DisplayName("Register bad")
     public void registerBadEmail(){
         try{
-            ServerFacade.register(new RegisterRequest("matt", "matt", null));
+            facade.register(new RegisterRequest("matt", "matt", null));
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -71,7 +76,7 @@ public class ServerFacadeTests {
     @DisplayName("Login normal")
     public void loginNorm(){
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.login(new LoginRequest("matt", "matt"));
+            facade.login(new LoginRequest("matt", "matt"));
         });
     }
 
@@ -80,7 +85,7 @@ public class ServerFacadeTests {
     @DisplayName("Login bad (password)")
     public void loginBad(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.login(new LoginRequest("matt", null));
+            facade.login(new LoginRequest("matt", null));
         });
     }
 
@@ -89,7 +94,7 @@ public class ServerFacadeTests {
     @DisplayName("Login bad (username)")
     public void loginBadUser(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.login(new LoginRequest(null, "matt"));
+            facade.login(new LoginRequest(null, "matt"));
         });
     }
 
@@ -98,7 +103,7 @@ public class ServerFacadeTests {
     @DisplayName("Create normal")
     public void createNorm(){
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.create("matthewGame");
+            facade.create("matthewGame");
         });
     }
 
@@ -107,7 +112,7 @@ public class ServerFacadeTests {
     @DisplayName("Create bad")
     public void createBad(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.create(null);
+            facade.create(null);
         });
     }
 
@@ -116,7 +121,7 @@ public class ServerFacadeTests {
     @DisplayName("Join normal")
     public void joinNorm(){
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.join(1, "BLACK");
+            facade.join(1, "BLACK");
         });
     }
     @Test
@@ -124,7 +129,7 @@ public class ServerFacadeTests {
     @DisplayName("Join normal")
     public void joinNormColor(){
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.join(1, "WHITE");
+            facade.join(1, "WHITE");
         });
     }
 
@@ -133,7 +138,7 @@ public class ServerFacadeTests {
     @DisplayName("Join bad (color)")
     public void joinBad(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.join(1, "GREEN");
+            facade.join(1, "GREEN");
         });
     }
     @Test
@@ -141,7 +146,7 @@ public class ServerFacadeTests {
     @DisplayName("Join bad (color)")
     public void joinBadBlue(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.join(1, "BLUE");
+            facade.join(1, "BLUE");
         });
     }
     @Test
@@ -149,7 +154,7 @@ public class ServerFacadeTests {
     @DisplayName("Join bad (color)")
     public void joinBadBlack(){
         Assertions.assertThrows(Exception.class, () -> {
-            ServerFacade.join(1, "black");
+            facade.join(1, "black");
         });
     }
 
@@ -158,12 +163,16 @@ public class ServerFacadeTests {
     @Order(15)
     @DisplayName("List normal")
     public void listNorm(){
-        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        try {
+            facade.clear();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+            facade.register(new RegisterRequest("matt", "matt", "matt"));
         });
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.list();
+            facade.list();
         });
     }
 
@@ -171,12 +180,16 @@ public class ServerFacadeTests {
     @Order(16)
     @DisplayName("Observe normal")
     public void observeNorm(){
-        Assertions.assertDoesNotThrow(ServerFacade::clear);
+        try {
+            facade.clear();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.register(new RegisterRequest("matt", "matt", "matt"));
+            facade.register(new RegisterRequest("matt", "matt", "matt"));
         });
         Assertions.assertDoesNotThrow(() -> {
-            ServerFacade.observe(1);
+            facade.observe(1);
         });
     }
 }

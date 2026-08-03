@@ -19,7 +19,7 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public static HttpResponse<String> register(RegisterRequest req) throws Exception{
+    public HttpResponse<String> register(RegisterRequest req) throws Exception{
         Gson gson = new Gson();
         String json = gson.toJson(req);
 
@@ -35,7 +35,7 @@ public class ServerFacade {
         return response;
     }
 
-    public static void clear() throws Exception{
+    public void clear() throws Exception{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + "/db"))
@@ -45,7 +45,7 @@ public class ServerFacade {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static HttpResponse<String> login(LoginRequest req) throws Exception{
+    public HttpResponse<String> login(LoginRequest req) throws Exception{
         if(req.username() == null){
             throw new DataAccessException("null username");
         }
@@ -67,7 +67,7 @@ public class ServerFacade {
         authorization = result.authToken();
         return response;
     }
-    public static HttpResponse<String> create(String gameName) throws Exception {
+    public HttpResponse<String> create(String gameName) throws Exception {
         if(gameName == null){
             throw new DataAccessException("GameName null");
         }
@@ -84,11 +84,11 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static HttpResponse<String> observe(int gameId) throws IOException, InterruptedException{
+    public HttpResponse<String> observe(int gameId) throws IOException, InterruptedException{
         return list();
     }
 
-    public static HttpResponse<String> list() throws IOException, InterruptedException {
+    public HttpResponse<String> list() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + "/game"))
@@ -98,7 +98,7 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static HttpResponse<String> logout() throws IOException, InterruptedException {
+    public HttpResponse<String> logout() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + "/session"))
@@ -110,7 +110,7 @@ public class ServerFacade {
         return response;
     }
 
-    public static HttpResponse<String> join(int gameId, String color) throws  Exception {
+    public HttpResponse<String> join(int gameId, String color) throws  Exception {
         if(!color.equals("BLACK") && !color.equals("WHITE")){
             throw new DataAccessException("Invalid color");
         }
@@ -129,7 +129,7 @@ public class ServerFacade {
     }
 
 
-    public static void highlight(HighlightRequest req) throws Exception{
+    public void highlight(HighlightRequest req) throws Exception{
 
     }
 }
