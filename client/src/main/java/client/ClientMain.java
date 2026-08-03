@@ -321,21 +321,53 @@ public class ClientMain {
                     return;
                 }
             }
-//            else if(userIn.equals("leave")){
-//
-//            }
+            else if(userIn.equals("leave")){
+                return;
+            }
 //            else if(userIn.equals("move")){
 //
 //            }
-//            else if(userIn.equals("highlight")){
-//
-//            }
+            else if(userIn.equals("highlight")){
+                highlightMoves(out);
+            }
             else if(userIn.equals("redraw")){
                 if(playerColor.equals("BLACK")){
                     printGameBlack(out);
                 }else{
                     printGameWhite(out);
                 }
+            }
+        }
+    }
+
+    private static void highlightMoves(PrintStream out) {
+        out.printf("%sInput a piece by position (%s%sCOLUMN ROW%s%s) to see it's possible moves: ",
+                SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
+                SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
+                RESET_TEXT_ITALIC);
+        Scanner myScan = new Scanner(System.in);
+        char col;
+        int row;
+        col = myScan.next().charAt(0);
+        row = myScan.nextInt();
+        while (true) {
+            if ((col > 64 && col < 73)
+                    || (col > 96 && col < 105)) {
+                col = toLower(col);
+                break;
+            } else {
+                out.printf("%sInvalid input column. Input a single letter between a-h: ",
+                        SET_TEXT_COLOR_BLUE);
+                col = myScan.next().charAt(0);
+            }
+        }
+        while (true) {
+            if (row > 0 && row < 9) {
+                break;
+            } else {
+                out.printf("%sInvalid input row. Input a single number between 1 and 8: ",
+                        SET_TEXT_COLOR_BLUE);
+                row = myScan.nextInt();
             }
         }
     }
@@ -363,6 +395,13 @@ public class ClientMain {
 
     private static void clear() throws Exception{
         ServerFacade.clear();
+    }
+
+    private static char toLower(char let){
+        if(let < 97){
+            return (char) (let + 32);
+        }
+        return let;
     }
 
     private static void printBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols){
