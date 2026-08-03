@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -325,7 +327,7 @@ public class ClientMain {
                 return;
             }
 //            else if(userIn.equals("move")){
-//
+//                makeMove();
 //            }
             else if(userIn.equals("highlight")){
                 highlightMoves(out);
@@ -340,36 +342,51 @@ public class ClientMain {
         }
     }
 
-    private static void highlightMoves(PrintStream out) {
-        out.printf("%sInput a piece by position (%s%sCOLUMN ROW%s%s) to see it's possible moves: ",
-                SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
-                RESET_TEXT_ITALIC);
+    private static List<Character> validateMoveInput(PrintStream out){
+        List<Character> result = new ArrayList<>();
         Scanner myScan = new Scanner(System.in);
         char col;
-        int row;
+        char fill;
         col = myScan.next().charAt(0);
-        row = myScan.nextInt();
-        while (true) {
-            if ((col > 64 && col < 73)
-                    || (col > 96 && col < 105)) {
+        while(true){
+            if((col > 64 && col < 73)
+                || (col > 96 && col < 105)){
                 col = toLower(col);
+                result.add(col);
+                fill = myScan.next().charAt(0);
                 break;
             } else {
+                fill = myScan.next().charAt(0);
                 out.printf("%sInvalid input column. Input a single letter between a-h: ",
                         SET_TEXT_COLOR_BLUE);
                 col = myScan.next().charAt(0);
             }
         }
         while (true) {
-            if (row > 0 && row < 9) {
+            if(fill > 48 && fill < 57) {
+                result.add(fill);
                 break;
-            } else {
-                out.printf("%sInvalid input row. Input a single number between 1 and 8: ",
+            }
+            else{
+                out.printf("%sInvalid row input. Input a single number between 1 and 8: ",
                         SET_TEXT_COLOR_BLUE);
-                row = myScan.nextInt();
+                fill = myScan.next().charAt(0);
             }
         }
+        return result;
+    }
+
+    private static void highlightMoves(PrintStream out) {
+        out.printf("%sInput a piece by position (%s%sCOLUMN ROW%s%s) to see it's possible moves: ",
+                SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
+                SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
+                RESET_TEXT_ITALIC);
+        Scanner myScan = new Scanner(System.in);
+        List<Character> result = validateMoveInput(out);
+        char col = result.get(0);
+        char fill = result.get(1);
+        int row = fill - '0';
+        out.println("col = " + col+ "\nrow = " + row);
     }
 
     private static boolean logout(PrintStream out) throws Exception {
