@@ -24,12 +24,12 @@ import static ui.EscapeSequences.*;
 public class ChessClient implements NotificationHandler{
     private String userName = null;
     private final ServerFacade server;
-//    private final WebSocketFacade ws;
+    private final WebSocketFacade ws;
     public static String playerColor;
 
     public ChessClient(String serverUrl) throws ResponseException{
         server = new ServerFacade(serverUrl);
-//        ws = new WebSocketFacade(serverUrl);
+        ws = new WebSocketFacade(serverUrl, this);
     }
 
     public void notify(ServerMessage message) {
