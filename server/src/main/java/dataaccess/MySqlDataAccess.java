@@ -165,10 +165,9 @@ public class MySqlDataAccess implements DataAccess{
 
     public void updateGame(int gameId, ChessGame game) {
         Gson gson = new Gson();
-
         try(Connection conn = DatabaseManager.getConnection()){
             var statement = "UPDATE gamedata SET gameJson=? WHERE gameId=?";
-            try(PreparedStatement p = conn.prepareStatement(statement)){
+            try(PreparedStatement p = conn.prepareStatement(statement)) {
                 p.setString(1, gson.toJson(game));
                 p.setInt(2, gameId);
                 p.executeUpdate();
@@ -214,6 +213,9 @@ public class MySqlDataAccess implements DataAccess{
         }
         if(rs.getString("gameName") != null){
             gameData.setGameName(rs.getString("gameName"));
+        }
+        if(rs.getString("gameJson") != null){
+            gameData.setGame(rs.getString("gameJson"));
         }
         return gameData;
     }

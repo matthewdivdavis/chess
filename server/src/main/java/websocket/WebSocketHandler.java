@@ -51,7 +51,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case MAKE_MOVE -> {
                     System.out.println("ctx.message(): " + ctx.message());
-                    if(validMove(userGameCommand)){
+                    if(validMove(userGameCommand, ctx)){
                         System.out.println("\nMaking Move\n");
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
@@ -59,7 +59,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                     else{
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                                null, null, "message: You are not authorized")));
+                                null, null, "message: Make move error")));
                     }
                 }
                 case LEAVE -> System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
@@ -67,7 +67,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
                     ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                             null, "Resigning...", null)));
-                    resign(userGameCommand.getUsername(), ctx.session);
+                    resign(userGameCommand.getUsername(), ctx.session, userGameCommand.getGameID());
                 }
             }
         } catch (IOException e){
@@ -76,7 +76,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     }
 
-    private void resign(String username, Session session) throws IOException{
+    private void resign(String username, Session session, int gameId) throws IOException{
         if(connections.contains(session)){
             var message = String.format("message: %s has resigned", username);
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
@@ -88,6 +88,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void enter(String username, Session session) throws IOException{
         connections.add(session);
         var message = String.format("message: %s has joined the game", username);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
+        connections.broadcast(session, notification);
+    }
+
+    private void checkMateMessage(String color, Session session) throws IOException {
+        var message = String.format("message: %s is in checkmate. ", color);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
+        connections.broadcast(session, notification);
+    }
+
+    private void isInCheckMessage(String color, Session session) throws IOException {
+        var message = String.format("message: %s is in check. ", color);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification);
     }
@@ -126,32 +138,45 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return false;
     }
 
-    private boolean checkMove(ChessMove move, int gameId){
+    private boolean checkMove(ChessMove move, int gameId, WsMessageContext ctx){
         try{
             MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
-//            AuthData authData = mySqlDataAccess.getAuth(authToken);
             ChessGame chessGame = mySqlDataAccess.getGame(gameId).getGame();
             chessGame.setBoard(mySqlDataAccess.getGame(gameId).getGame().getBoard());
             if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                System.out.println("CheckMove Error");
                 return false;
             }
             for(ChessMove m : chessGame.validMoves(move.getStartPosition())){
                 if(move.equals(m)){
                     chessGame.makeMove(move);
+                    mySqlDataAccess.updateGame(gameId, chessGame);
+                    if(chessGame.isInCheckmate(chessGame.getTeamTurn())){
+                        checkMateMessage(chessGame.getTeamTurn().toString(), ctx.session);
+                        String msg = "message: " + chessGame.getTeamTurn().toString() + " is in checkmate";
+                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                                null, msg, null)));
+                    }
+                    if(chessGame.isInCheck(chessGame.getTeamTurn())){
+                        isInCheckMessage(chessGame.getTeamTurn().toString(), ctx.session);
+                        String msg = "message: " + chessGame.getTeamTurn().toString() + " is in check";
+                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                                null, msg, null)));
+                    }
                     return true;
                 }
             }
-
-        }catch (DataAccessException | ResponseException | InvalidMoveException e) {
+        }catch (DataAccessException | ResponseException | InvalidMoveException | IOException e) {
             System.out.println(e.toString());
         }
+        System.out.println("CheckMove Error After If");
         return false;
     }
 
-    private boolean validMove(UserGameCommand userGameCommand){
+    private boolean validMove(UserGameCommand userGameCommand, WsMessageContext ctx){
         return checkAuth(userGameCommand.getAuthToken())
-                && checkMove(userGameCommand.getMove(), userGameCommand.getGameID())
-                && checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken());
+                && checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken())
+                && checkMove(userGameCommand.getMove(), userGameCommand.getGameID(), ctx);
     }
 
     private boolean checkLogin(UserGameCommand userGameCommand){
@@ -192,6 +217,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (DataAccessException | ResponseException e) {
             System.out.println(e.toString());
         }
+        System.out.println("Bad Auth");
         return false;
     }
 }
