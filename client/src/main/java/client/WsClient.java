@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.Endpoint;
@@ -9,7 +9,6 @@ import jakarta.websocket.WebSocketContainer;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Scanner;
 
 public class WsClient extends Endpoint {
     public Session session;
