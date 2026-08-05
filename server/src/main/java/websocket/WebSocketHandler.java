@@ -6,6 +6,7 @@ import dataaccess.MySqlDataAccess;
 import exception.DataAccessException;
 import exception.ResponseException;
 import io.javalin.websocket.*;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
@@ -104,29 +105,53 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.sendMessage(session, notification);
     }
 
-    private boolean checkTurn(ChessMove move, int gameId){
+    private boolean checkTurn(ChessMove move, int gameId, String authToken){
+        try{
+            MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
 
+            AuthData authData = mySqlDataAccess.getAuth(authToken);
+            GameData gameData = mySqlDataAccess.getGame(gameId);
+            ChessGame chessGame = gameData.getGame();
+            if(chessGame.getTeamTurn() == chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor()){
+                if(chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK && gameData.getBlackUsername().equals(authData.getUsername())){
+                    return true;
+                }
+                else if (gameData.getWhiteUsername().equals(authData.getUsername())){
+                    return true;
+                }
+            }
+        } catch (DataAccessException | ResponseException e) {
+            System.out.println(e.toString());
+        }
+        return false;
     }
 
     private boolean checkMove(ChessMove move, int gameId){
         try{
             MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
+//            AuthData authData = mySqlDataAccess.getAuth(authToken);
             ChessGame chessGame = mySqlDataAccess.getGame(gameId).getGame();
             chessGame.setBoard(mySqlDataAccess.getGame(gameId).getGame().getBoard());
+            if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                return false;
+            }
             for(ChessMove m : chessGame.validMoves(move.getStartPosition())){
                 if(move.equals(m)){
+                    chessGame.makeMove(move);
                     return true;
                 }
             }
 
-        }catch (DataAccessException | ResponseException e) {
+        }catch (DataAccessException | ResponseException | InvalidMoveException e) {
             System.out.println(e.toString());
         }
         return false;
     }
 
     private boolean validMove(UserGameCommand userGameCommand){
-        return checkAuth(userGameCommand.getAuthToken()) && checkMove(userGameCommand.getMove(), userGameCommand.getGameID());
+        return checkAuth(userGameCommand.getAuthToken())
+                && checkMove(userGameCommand.getMove(), userGameCommand.getGameID())
+                && checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken());
     }
 
     private boolean checkLogin(UserGameCommand userGameCommand){
