@@ -50,7 +50,7 @@ public class WebSocketFacade extends Endpoint {
         this.username = username;
         this.gameId = gameId;
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, username);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, username, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
@@ -60,7 +60,7 @@ public class WebSocketFacade extends Endpoint {
     public void move(int oldCol, int oldRow, int newCol, int newRow) throws Exception{
         System.out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username);
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);

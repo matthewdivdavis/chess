@@ -1,10 +1,12 @@
 package websocket;
 
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.MySqlDataAccess;
 import exception.DataAccessException;
 import exception.ResponseException;
 import io.javalin.websocket.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import server.Server;
@@ -47,7 +49,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                 }
                 case MAKE_MOVE -> {
-                    if(checkAuth(userGameCommand.getAuthToken())){
+                    System.out.println("ctx.message(): " + ctx.message());
+                    if(validMove(userGameCommand)){
                         System.out.println("\nMaking Move\n");
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
@@ -101,10 +104,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.sendMessage(session, notification);
     }
 
+    private boolean checkTurn(ChessMove move, int gameId){
+
+    }
+
+    private boolean checkMove(ChessMove move, int gameId){
+        try{
+            MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
+            ChessGame chessGame = mySqlDataAccess.getGame(gameId).getGame();
+            chessGame.setBoard(mySqlDataAccess.getGame(gameId).getGame().getBoard());
+            for(ChessMove m : chessGame.validMoves(move.getStartPosition())){
+                if(move.equals(m)){
+                    return true;
+                }
+            }
+
+        }catch (DataAccessException | ResponseException e) {
+            System.out.println(e.toString());
+        }
+        return false;
+    }
+
+    private boolean validMove(UserGameCommand userGameCommand){
+        return checkAuth(userGameCommand.getAuthToken()) && checkMove(userGameCommand.getMove(), userGameCommand.getGameID());
+    }
+
     private boolean checkLogin(UserGameCommand userGameCommand){
         return checkAuth(userGameCommand.getAuthToken())
                 && checkGameId(userGameCommand.getGameID());
-//                && checkUsername(userGameCommand.getUsername());
     }
 
     private boolean checkUsername(String username){
