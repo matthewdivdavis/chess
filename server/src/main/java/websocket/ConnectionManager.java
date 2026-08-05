@@ -18,6 +18,16 @@ public class ConnectionManager {
         connections.remove(session);
     }
 
+    public void sendMessage(Session session, ServerMessage message) throws IOException{
+        System.out.println(new Gson().toJson(message));
+        String msg = new Gson().toJson(message);
+        for(Session c : connections.values()){
+            if(c.isOpen() && c.equals(session)){
+                c.getRemote().sendString(msg);
+            }
+        }
+    }
+
     public void broadcast(Session excludeSession, ServerMessage message) throws IOException{
         System.out.println(new Gson().toJson(message));
         String msg = new Gson().toJson(message);
