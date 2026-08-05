@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 
 import jakarta.websocket.*;
-import org.eclipse.jetty.server.Authentication;
+
 import request.*;
 import server.WsClient;
 import websocket.messages.ServerMessage;

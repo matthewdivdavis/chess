@@ -43,20 +43,6 @@ public class ConnectionManager {
         connections.put(gameId, sessionList);
     }
 
-//    public void sendMessage(Session session, ServerMessage message, int gameId) throws IOException, DataAccessException{
-//        System.out.println(new Gson().toJson(message));
-//        String msg = new Gson().toJson(message);
-//        List<Session> sessionList = connections.get(gameId);
-//        if(sessionList == null){
-//            throw new DataAccessException("Session List Empty");
-//        }
-//        for(Session c : sessionList){
-//            if(c.isOpen() && c.equals(session)){
-//                c.getRemote().sendString(msg);
-//            }
-//        }
-//    }
-
     public void broadcast(Session excludeSession, ServerMessage message, int gameId) throws IOException, DataAccessException{
         System.out.println(new Gson().toJson(message));
         String msg = new Gson().toJson(message);

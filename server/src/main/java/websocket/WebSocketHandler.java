@@ -165,7 +165,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return false;
     }
 
-
     private void checkMateMessage(String color, Session session, int gameId) throws IOException, DataAccessException{
         var message = String.format("message: %s is in checkmate. ", color);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
@@ -185,11 +184,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
     }
-
-//    private void error(String username, Session session, int gameId) throws IOException{
-//        var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, null, null, "errorMessage: You are not authorized");
-//        connections.sendMessage(session, notification, gameId);
-//    }
 
     private boolean checkTurn(ChessMove move, int gameId, String authToken){
         try{
@@ -259,18 +253,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private boolean checkLogin(UserGameCommand userGameCommand){
         return checkAuth(userGameCommand.getAuthToken())
                 && checkGameId(userGameCommand.getGameID());
-    }
-
-    private boolean checkUsername(String username){
-        try {
-            MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
-            if(mySqlDataAccess.getUser(username) != null){
-                return true;
-            }
-        } catch (DataAccessException | ResponseException e) {
-            System.out.println(e.toString());
-        }
-        return false;
     }
 
     private boolean checkGameId(int gameId){
