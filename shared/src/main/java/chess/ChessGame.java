@@ -15,6 +15,7 @@ public class ChessGame {
     TeamColor team;
     boolean blackCastle;
     boolean whiteCaste;
+    TeamColor winner;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -152,6 +153,17 @@ public class ChessGame {
             throw new InvalidMoveException();
         }
     }
+    public void setWinner(TeamColor teamColor){
+        if(teamColor == TeamColor.BLACK){
+            winner = TeamColor.BLACK;
+        }
+        else{
+            winner = TeamColor.WHITE;
+        }
+    }
+    public TeamColor getWinner(){
+        return winner;
+    }
     public void helpMove(ChessMove move) {
         switchTurn(board.getPiece(move.getStartPosition()).getTeamColor());
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
@@ -178,6 +190,11 @@ public class ChessGame {
                     }
                 }
             }
+        }
+        if(teamColor == TeamColor.BLACK){
+            winner = TeamColor.WHITE;
+        } else{
+            winner = TeamColor.BLACK;
         }
         return true;
     }

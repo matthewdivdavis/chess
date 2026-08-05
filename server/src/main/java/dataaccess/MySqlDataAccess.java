@@ -177,6 +177,34 @@ public class MySqlDataAccess implements DataAccess{
         }
     }
 
+    public void updateWhite(int gameId, String username){
+        Gson gson = new Gson();
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gamedata SET whiteUsername=? WHERE gameId=?";
+            try(PreparedStatement p = conn.prepareStatement(statement)) {
+                p.setString(1, username);
+                p.setInt(2, gameId);
+                p.executeUpdate();
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateBlack(int gameId, String username){
+        Gson gson = new Gson();
+        try(Connection conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gamedata SET blackUsername=? WHERE gameId=?";
+            try(PreparedStatement p = conn.prepareStatement(statement)) {
+                p.setString(1, username);
+                p.setInt(2, gameId);
+                p.executeUpdate();
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     private int executeGameUpdate(String statement, String gameName, String gameJson) throws ResponseException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement p = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {

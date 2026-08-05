@@ -15,6 +15,15 @@ public class GameData {
         game = new ChessGame();
     }
 
+    public void setLoser(String username){
+        if (blackUsername.equals(username)) {
+            game.setWinner(ChessGame.TeamColor.WHITE);
+        }
+        else{
+            game.setWinner(ChessGame.TeamColor.BLACK);
+        }
+    }
+
     public void setBlackUsername(String username){
         blackUsername = username;
     }
