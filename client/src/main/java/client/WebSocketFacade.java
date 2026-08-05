@@ -6,7 +6,6 @@ import exception.ResponseException;
 import jakarta.websocket.*;
 
 import request.*;
-import server.WsClient;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 
