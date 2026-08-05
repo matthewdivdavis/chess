@@ -32,7 +32,7 @@ public class ChessClient implements NotificationHandler{
     }
 
     public void notify(ServerMessage message) {
-        System.out.println(SET_TEXT_COLOR_RED + message);
+        System.out.println(RED + message);
     }
     public static void run() throws Exception {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -52,7 +52,7 @@ public class ChessClient implements NotificationHandler{
     private static int postLogin(PrintStream out) throws Exception {
         Scanner myScan = new Scanner(System.in);
         while(true){
-            out.printf(SET_TEXT_COLOR_LIGHT_GREY);
+            out.printf(LIGHT_GREY);
             out.print("[LOGGED IN] >>> ");
             String input = myScan.next().trim();
             if(input.equals("help")){
@@ -85,7 +85,7 @@ public class ChessClient implements NotificationHandler{
         out.println("Welcome to 240 Chess. Type 'help' to get started. ");
         boolean loggedIn = false;
         while(!loggedIn){
-            out.printf(SET_TEXT_COLOR_LIGHT_GREY);
+            out.printf(LIGHT_GREY);
             out.print("[LOGGED OUT] >>> ");
             String input = myScan.next().trim();
             if(input.equals("help")){
@@ -105,39 +105,25 @@ public class ChessClient implements NotificationHandler{
         return 0;
     }
     private static void helpLoggedIn(PrintStream out){
-        out.printf("%s\tcreate <NAME> %s- a game\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tlist %s- games\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tjoin <ID> [WHITE or BLACK] %s- a game\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tobserve %s- a game\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tlogout %s- when you are done\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tquit %s- playing chess\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\thelp %s- with possible commands\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf(SET_TEXT_COLOR_LIGHT_GREY);
-
+        out.printf("%s\tcreate <NAME> %s- a game\n%s\tlist %s- games\n%s\tjoin <ID> [WHITE or BLACK] %s- a game\n%s\tobserve %s- a game\n%s\t" +
+            "logout %s- when you are done\n%s\tquit %s- playing chess\n%s\tquit %s- playing chess\n%s\thelp %s- with possible commands\n%s",
+            BLUE,MAGENTA,BLUE,MAGENTA,BLUE,MAGENTA,BLUE,MAGENTA,BLUE,MAGENTA,BLUE, MAGENTA,BLUE, MAGENTA,BLUE, MAGENTA, LIGHT_GREY);
     }
     private static void helpLoggedOut(PrintStream out){
-        out.printf("%s\tregister <USERNAME> <PASSWORD> <EMAIL> %s- to create an account\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tlogin <USERNAME> <PASSWORD> %s- to play chess\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tquit %s- playing chess\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\thelp %s- with possible commands\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf(SET_TEXT_COLOR_LIGHT_GREY);
+        out.printf("%s\tregister <USERNAME> <PASSWORD> <EMAIL> %s- to create an account\n%s\tlogin <USERNAME> <PASSWORD> %s- to play chess\n%s\t" +
+                "quit %s- playing chess\n%s\thelp %s- with possible commands\n%s", BLUE, MAGENTA,BLUE,
+                MAGENTA, BLUE, MAGENTA,BLUE,MAGENTA,LIGHT_GREY);
     }
     private static void helpGamePlay(PrintStream out){
-        out.printf("%s\tmove <COLUMN ROW> %s- to make a chess move\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\thighlight %s- highlight all legal moves\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tleave %s- leave game\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tresign %s- admit defeat and give the win to your opponent (rip)\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf("%s\tredraw %s- redraw the chessboard\n", SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA);
-        out.printf(SET_TEXT_COLOR_LIGHT_GREY);
+        out.printf("%s\tmove <COLUMN ROW> %s- to make a chess move\n", BLUE, MAGENTA);
+        out.printf("%s\thighlight %s- highlight all legal moves\n", BLUE, MAGENTA);
+        out.printf("%s\tleave %s- leave game\n", BLUE, MAGENTA);
+        out.printf("%s\tresign %s- admit defeat and give the win to your opponent (rip)\n", BLUE, MAGENTA);
+        out.printf("%s\tredraw %s- redraw the chessboard\n", BLUE, MAGENTA);
+        out.printf(LIGHT_GREY);
     }
-
     private static boolean login(PrintStream out) throws Exception {
-        out.printf("%sInput your username and password (%s%susername password%s%s): ",
-                SET_TEXT_COLOR_BLUE,
-                SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC,
-                RESET_TEXT_ITALIC,
-                SET_TEXT_COLOR_BLUE);
+        out.printf("%sInput your username and password (%s%susername password%s%s): ", BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
@@ -159,21 +145,15 @@ public class ChessClient implements NotificationHandler{
     }
     private static boolean register(PrintStream out) throws Exception {
         out.printf("%sInput your username, password and email (%s%susername password email%s%s): ",
-                SET_TEXT_COLOR_BLUE,
-                SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC,
-                RESET_TEXT_ITALIC,
-                SET_TEXT_COLOR_BLUE);
+                BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, BLUE);
         Scanner myScan = new Scanner(System.in);
         String username = myScan.next();
         String password = myScan.next();
         String email = myScan.next();
-
         // for sending the data
         Gson gson = new Gson();
         RegisterRequest request = new RegisterRequest(username, password, email);
         HttpResponse<String> response = server.register(request);
-
         if(response.statusCode() == 200){
             LoginResult result = gson.fromJson(response.body(), LoginResult.class);
             System.out.println("Logged in as " + username);
@@ -185,16 +165,13 @@ public class ChessClient implements NotificationHandler{
         }
         return false;
     }
-
     private static boolean create(PrintStream out) throws Exception {
-        out.printf("%sInput a game name: ", SET_TEXT_COLOR_BLUE);
+        out.printf("%sInput a game name: ", BLUE);
         Scanner myScan = new Scanner(System.in);
         String gameName = myScan.next();
-
         // for sending the data
         Gson gson = new Gson();
         HttpResponse<String> response = server.create(gameName);
-
         if(response.statusCode() == 200){
             CreateResult result = gson.fromJson(response.body(), CreateResult.class);
             System.out.println("Game created as '" + gameName + "' with ID: " + result.gameID());
@@ -206,12 +183,10 @@ public class ChessClient implements NotificationHandler{
         }
         return false;
     }
-
     private static GameResult list(PrintStream out, int gameId) throws IOException, InterruptedException {
         // for sending the data
         Gson gson = new Gson();
         HttpResponse<String> response = server.list();
-
         if(response.statusCode() == 200){
             ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
             if(gameId > 0){
@@ -223,10 +198,10 @@ public class ChessClient implements NotificationHandler{
                 return null;
             }
             if(result.games().size() < 1){
-                out.printf("%sNo games. Please create a game and try again.\n", SET_TEXT_COLOR_MAGENTA);
+                out.printf("%sNo games. Please create a game and try again.\n", MAGENTA);
             }
             for(var game : result.games()){
-                out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+                out.printf("%s%s\n", BLUE, game.toString());
             }
         }
         else{
@@ -235,39 +210,33 @@ public class ChessClient implements NotificationHandler{
         }
         return null;
     }
-
     public static boolean observe(PrintStream out) throws IOException, InterruptedException {
-        out.printf("%sInput gameID: ", SET_TEXT_COLOR_BLUE);
+        out.printf("%sInput gameID: ", BLUE);
         Scanner myScan = new Scanner(System.in);
         int gameId = myScan.nextInt();
         GameResult game = getGame(out, gameId);
         if(game == null){
-            out.printf("%sCould not find game %d. Please Try again.\n", SET_TEXT_COLOR_MAGENTA, gameId);
+            out.printf("%sCould not find game %d. Please Try again.\n", MAGENTA, gameId);
             return false;
         }
-        out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+        out.printf("%s%s\n", BLUE, game.toString());
         printGameWhite(out);
         return true;
     }
-
     private static void join(PrintStream out) throws Exception {
         out.printf("%sInput gameID, and color (%s%sgameID color%s%s): ",
-                SET_TEXT_COLOR_BLUE,
-                SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC,
-                SET_TEXT_COLOR_BLUE,
-                RESET_TEXT_ITALIC);
+                BLUE, MAGENTA, SET_TEXT_ITALIC, BLUE, RESET_TEXT_ITALIC);
         Scanner myScan = new Scanner(System.in);
         int gameId;
         while(true){
             try {
                 gameId = myScan.nextInt();
                 if(gameId < 1){
-                    out.printf("%sInvalid ID input. Please try again: ", SET_TEXT_COLOR_BLUE);
+                    out.printf("%sInvalid ID input. Please try again: ", BLUE);
                 }
                 break;
             } catch (Exception e) {
-                out.printf("%sInvalid ID input. Please try again: ", SET_TEXT_COLOR_BLUE);
+                out.printf("%sInvalid ID input. Please try again: ", BLUE);
                 myScan.next();
             }
         }
@@ -275,11 +244,11 @@ public class ChessClient implements NotificationHandler{
         while(true){
             if(!color.equals("BLACK") && !color.equals("WHITE")){
                 out.printf("%sInvalid color input. Please choose color again (%s%sBLACK or WHITE%s%s): ",
-                        SET_TEXT_COLOR_BLUE,
-                        SET_TEXT_COLOR_MAGENTA,
+                        BLUE,
+                        MAGENTA,
                         SET_TEXT_ITALIC,
                         RESET_TEXT_ITALIC,
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 color = myScan.next();
             }
             else{
@@ -298,10 +267,10 @@ public class ChessClient implements NotificationHandler{
                 }
             }
             if(game == null){
-                out.printf("%sCould not find game %d. Please Try again.\n", SET_TEXT_COLOR_MAGENTA, gameId);
+                out.printf("%sCould not find game %d. Please Try again.\n", MAGENTA, gameId);
                 return;
             }
-            out.printf("%s%s\n", SET_TEXT_COLOR_BLUE, game.toString());
+            out.printf("%s%s\n", BLUE, game.toString());
             if(color.equals("BLACK")){
                 playerColor = "BLACK";
                 printGameBlack(out);
@@ -320,11 +289,10 @@ public class ChessClient implements NotificationHandler{
             System.out.println(result.message());
         }
     }
-
     private static void gamePlay(PrintStream out) throws Exception{
-        out.printf("%sType 'help' to list commands.\n", SET_TEXT_COLOR_LIGHT_GREY);
+        out.printf("%sType 'help' to list commands.\n", LIGHT_GREY);
         while(true){
-            out.printf("%s[GAME PLAY] >>> ", SET_TEXT_COLOR_LIGHT_GREY);
+            out.printf("%s[GAME PLAY] >>> ", LIGHT_GREY);
             Scanner myScan = new Scanner(System.in);
             String userIn = myScan.next();
             if(userIn.equals("help")){
@@ -332,8 +300,8 @@ public class ChessClient implements NotificationHandler{
             }
             else if(userIn.equals("resign")){
                 out.printf("%sAre you sure you wish to resign? (%s%sy or n%s%s): %s",
-                        SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
-                        SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_LIGHT_GREY);
+                        BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
+                        BLUE, LIGHT_GREY);
                 if(myScan.next().equals("y")){
                     return;
                 }
@@ -356,7 +324,6 @@ public class ChessClient implements NotificationHandler{
             }
         }
     }
-
     private static List<Character> validateMoveHighlight(PrintStream out){
         List<Character> result = new ArrayList<>();
         Scanner myScan = new Scanner(System.in);
@@ -372,7 +339,7 @@ public class ChessClient implements NotificationHandler{
                 break;
             } else {
                 out.printf("%sInvalid input column. Input a single letter between a-h: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 col = myScan.next().charAt(0);
             }
         }
@@ -383,17 +350,16 @@ public class ChessClient implements NotificationHandler{
             }
             else{
                 out.printf("%sInvalid row input. Input a single number between 1 and 8: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 fill = myScan.next().charAt(0);
             }
         }
         return result;
     }
-
     private static void highlightMoves(PrintStream out) throws Exception{
         out.printf("%sInput a piece by position (%s%sCOLUMN ROW%s%s) to see it's possible moves: ",
-                SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
+                BLUE, MAGENTA,
+                SET_TEXT_ITALIC, BLUE,
                 RESET_TEXT_ITALIC);
         List<Character> result = validateMoveHighlight(out);
         char col = result.get(0);
@@ -401,7 +367,6 @@ public class ChessClient implements NotificationHandler{
         out.println("col = " + col+ "\nrow = " + row);
         server.highlight(new HighlightRequest(col, row));
     }
-
     private static List<Character> validateMoveMakeMove(PrintStream out){
         List<Character> result = new ArrayList<>();
         Scanner myScan = new Scanner(System.in);
@@ -421,7 +386,7 @@ public class ChessClient implements NotificationHandler{
                 break;
             } else {
                 out.printf("%sInvalid first input column. Input a single letter between a-h: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 oldCol = myScan.next().charAt(0);
             }
         }
@@ -432,7 +397,7 @@ public class ChessClient implements NotificationHandler{
             }
             else{
                 out.printf("%sInvalid first row input. Input a single number between 1 and 8: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 oldRow = myScan.next().charAt(0);
             }
         }
@@ -444,7 +409,7 @@ public class ChessClient implements NotificationHandler{
                 break;
             } else {
                 out.printf("%sInvalid second input column. Input a single letter between a-h: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 newCol = myScan.next().charAt(0);
             }
         }
@@ -455,18 +420,15 @@ public class ChessClient implements NotificationHandler{
             }
             else{
                 out.printf("%sInvalid second row input. Input a single number between 1 and 8: ",
-                        SET_TEXT_COLOR_BLUE);
+                        BLUE);
                 newRow = myScan.next().charAt(0);
             }
         }
         return result;
     }
-
     private static void makeMove(PrintStream out) throws Exception{
         out.printf("%sInput piece's current position and the new desired position (%s%sCOLUMN ROW COLUMN ROW%s%s) : ",
-                SET_TEXT_COLOR_BLUE, SET_TEXT_COLOR_MAGENTA,
-                SET_TEXT_ITALIC, SET_TEXT_COLOR_BLUE,
-                RESET_TEXT_ITALIC);
+                BLUE, MAGENTA,SET_TEXT_ITALIC, BLUE, RESET_TEXT_ITALIC);
         List<Character> result = validateMoveMakeMove(out);
         int oldCol = result.get(0) - 'a' + 1;
         int oldRow = result.get(1) - '0';
@@ -474,7 +436,6 @@ public class ChessClient implements NotificationHandler{
         int newRow = result.get(3) - '0';
         ws.move(oldCol, oldRow, newCol, newRow);
     }
-
     private static boolean logout(PrintStream out) throws Exception {
         HttpResponse<String> response = server.logout();
         if(response.statusCode() == 200){
@@ -487,26 +448,21 @@ public class ChessClient implements NotificationHandler{
         }
         return false;
     }
-
-
     private static GameResult getGame(PrintStream out, int gameId) throws IOException, InterruptedException {
         if(gameId < 1){
             return null;
         }
         return list(out, gameId);
     }
-
     private static void clear() throws Exception{
         server.clear();
     }
-
     private static char toLower(char let){
         if(let < 97){
             return (char) (let + 32);
         }
         return let;
     }
-
     private static void printBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols){
         String textColor;
         String bgColor;
@@ -515,7 +471,7 @@ public class ChessClient implements NotificationHandler{
         String darkBoard = SET_BG_COLOR_BROWN;
         String boarderColor = SET_BG_COLOR_LIGHT_GREY;
         String p;
-        out.printf("%s   %s%s", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        out.printf("%s   %s%s", boarderColor, BLACK, SET_TEXT_BOLD);
         for(char l : lets){
             out.printf("  %s  ", l);
         }
@@ -523,66 +479,53 @@ public class ChessClient implements NotificationHandler{
         int b = 0;
         out.printf("   %s\n", RESET_BG_COLOR);
         for(int a : range){
-            out.printf("%s %s%s%d ", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
+            out.printf("%s %s%s%d ", boarderColor, BLACK, SET_TEXT_BOLD, 8 - a);
             for(int c : cols){
-                textColor = SET_TEXT_COLOR_BLACK;
+                textColor = BLACK;
                 textBold = SET_TEXT_BOLD;
                 p = board[r][b];
                 if(a % 2 == 0 && c % 2 == 0){
                     bgColor = lightBoard;
-                }
-                else if(a % 2 != 0 && c%2 != 0){
+                }else if(a % 2 != 0 && c%2 != 0){
                     bgColor = lightBoard;
-                }
-                else{
+                }else{
                     bgColor = darkBoard;
                 }
-                out.printf("%s %s%s%s ", bgColor, textColor, textBold, p);
-                out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
+                out.printf("%s %s%s%s %s%s", bgColor, textColor, textBold, p, RESET_TEXT_COLOR, RESET_BG_COLOR);
                 b++;
             }
             b = 0;
-            out.printf("%s %s%s%d ", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
-            out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
+            out.printf("%s %s%s%d %s%s\n", boarderColor, BLACK, SET_TEXT_BOLD,8 - a,RESET_TEXT_COLOR, RESET_BG_COLOR);
             r++;
         }
-        out.printf("%s   %s%s", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        out.printf("%s   %s%s", boarderColor, BLACK, SET_TEXT_BOLD);
         for(char l : lets){
             out.printf("  %s  ", l);
         }
         out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
     }
-
     private static void printGameBlack(PrintStream out){
         String[][] board = {
                 {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK},
                 {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
                 {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
                 {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},};
         char[] lets = {'h', 'g', 'f', 'e', 'd', 'c', 'b' ,'a'};
         int[] range = {7, 6, 5, 4, 3, 2, 1, 0};
-        int[] cols = {7, 6, 5, 4, 3, 2, 1, 0};
-        printBoard(out, board, lets, range, cols);
+        printBoard(out, board, lets, range, range);
     }
-
     private static void printGameWhite(PrintStream out){
         String[][] board = {
                 {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
                 {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
+                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
                 {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
                 {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}};
         char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
         int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
-        int[] cols = {0, 1, 2, 3, 4, 5, 6, 7};
-        printBoard(out, board, lets, range, cols);
+        printBoard(out, board, lets, range, range);
     }
-
 }
