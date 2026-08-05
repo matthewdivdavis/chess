@@ -47,18 +47,38 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                 }
                 case MAKE_MOVE -> {
-                    System.out.println("\nMaking Move\n");
-                    ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
-                            userGameCommand.getGameID(), null, null)));
-                    makeMove(userGameCommand.getUsername(), ctx.session);
+                    if(checkAuth(userGameCommand.getAuthToken())){
+                        System.out.println("\nMaking Move\n");
+                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                                userGameCommand.getGameID(), null, null)));
+                        makeMove(userGameCommand.getUsername(), ctx.session);
+                    }
+                    else{
+                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                                null, null, "message: You are not authorized")));
+                    }
                 }
                 case LEAVE -> System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
-                case RESIGN -> System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
+                case RESIGN -> {
+                    System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
+                    ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                            null, "Resigning...", null)));
+                    resign(userGameCommand.getUsername(), ctx.session);
+                }
             }
         } catch (IOException e){
             e.printStackTrace();
         }
 
+    }
+
+    private void resign(String username, Session session) throws IOException{
+        if(connections.contains(session)){
+            var message = String.format("message: %s has resigned", username);
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
+            connections.broadcast(session, notification);
+            connections.remove(session);
+        }
     }
 
     private void enter(String username, Session session) throws IOException{
@@ -82,7 +102,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private boolean checkLogin(UserGameCommand userGameCommand){
-        return checkAuth(userGameCommand.getAuthToken()) && checkGameId(userGameCommand.getGameID());
+        return checkAuth(userGameCommand.getAuthToken())
+                && checkGameId(userGameCommand.getGameID());
+//                && checkUsername(userGameCommand.getUsername());
+    }
+
+    private boolean checkUsername(String username){
+        try {
+            MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
+            if(mySqlDataAccess.getUser(username) != null){
+                return true;
+            }
+        } catch (DataAccessException | ResponseException e) {
+            System.out.println(e.toString());
+        }
+        return false;
     }
 
     private boolean checkGameId(int gameId){

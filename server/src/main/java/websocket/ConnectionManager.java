@@ -14,6 +14,15 @@ public class ConnectionManager {
         connections.put(session, session);
     }
 
+    public boolean contains(Session session){
+        for(Session s : connections.values()){
+            if(s.equals(session)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void remove(Session session){
         connections.remove(session);
     }
