@@ -511,11 +511,11 @@ public class ChessClient implements NotificationHandler{
         String textColor;
         String bgColor;
         String textBold;
-        String LIGHT_BOARD = SET_BG_COLOR_WHITE;
-        String DARK_BOARD = SET_BG_COLOR_BROWN;
-        String BORDER_COLOR = SET_BG_COLOR_LIGHT_GREY;
+        String lightBoard = SET_BG_COLOR_WHITE;
+        String darkBoard = SET_BG_COLOR_BROWN;
+        String boarderColor = SET_BG_COLOR_LIGHT_GREY;
         String p;
-        out.printf("%s   %s%s", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        out.printf("%s   %s%s", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
             out.printf("  %s  ", l);
         }
@@ -523,30 +523,30 @@ public class ChessClient implements NotificationHandler{
         int b = 0;
         out.printf("   %s\n", RESET_BG_COLOR);
         for(int a : range){
-            out.printf("%s %s%s%d ", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
+            out.printf("%s %s%s%d ", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD, 8 - a);
             for(int c : cols){
                 textColor = SET_TEXT_COLOR_BLACK;
                 textBold = SET_TEXT_BOLD;
                 p = board[r][b];
                 if(a % 2 == 0 && c % 2 == 0){
-                    bgColor = LIGHT_BOARD;
+                    bgColor = lightBoard;
                 }
                 else if(a % 2 != 0 && c%2 != 0){
-                    bgColor = LIGHT_BOARD;
+                    bgColor = lightBoard;
                 }
                 else{
-                    bgColor = DARK_BOARD;
+                    bgColor = darkBoard;
                 }
                 out.printf("%s %s%s%s ", bgColor, textColor, textBold, p);
                 out.printf("%s%s", RESET_TEXT_COLOR, RESET_BG_COLOR);
                 b++;
             }
             b = 0;
-            out.printf("%s %s%s%d ", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
+            out.printf("%s %s%s%d ", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD,8 - a);
             out.printf("%s%s\n", RESET_TEXT_COLOR, RESET_BG_COLOR);
             r++;
         }
-        out.printf("%s   %s%s", BORDER_COLOR, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
+        out.printf("%s   %s%s", boarderColor, SET_TEXT_COLOR_BLACK, SET_TEXT_BOLD);
         for(char l : lets){
             out.printf("  %s  ", l);
         }

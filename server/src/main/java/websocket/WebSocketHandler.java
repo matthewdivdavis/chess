@@ -134,7 +134,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return true;
     }
 
-    private boolean resign(UserGameCommand userGameCommand, Session session, int gameId, WsMessageContext ctx) throws IOException, DataAccessException{
+    private boolean resign(UserGameCommand userGameCommand, Session session, int gameId, WsMessageContext ctx)
+            throws IOException, DataAccessException{
         if(connections.contains(session, userGameCommand.getGameID())){
             var message = String.format("message: %s has resigned", getUsername(userGameCommand));
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
