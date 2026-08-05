@@ -13,13 +13,19 @@ public class UserGameCommand {
     private final CommandType commandType;
 
     private final String authToken;
+    private final String username;
 
     private final Integer gameID;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public enum CommandType {

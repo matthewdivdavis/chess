@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
 
     static String authorization = null;
+    static String username = null;
     static int gameId = 0;
     NotificationHandler notificationHandler;
     Session session;
@@ -44,11 +45,12 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void connect(int gameId, String authToken) throws Exception {
+    public void connect(int gameId, String authToken, String username) throws Exception {
         authorization = authToken;
+        this.username = username;
         this.gameId = gameId;
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, username);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
@@ -58,7 +60,7 @@ public class WebSocketFacade extends Endpoint {
     public void move(int oldCol, int oldRow, int newCol, int newRow) throws Exception{
         System.out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId);
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
