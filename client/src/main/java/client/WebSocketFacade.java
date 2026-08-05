@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
@@ -18,7 +19,7 @@ public class WebSocketFacade extends Endpoint {
 
     static String authorization = null;
     static String username = null;
-    static int gameId = 0;
+    int gameId = 0;
     NotificationHandler notificationHandler;
     Session session;
 
@@ -44,12 +45,11 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void connect(int gameId, String authToken, String username) throws Exception {
+    public void connect(int gameId, String authToken) throws Exception {
         authorization = authToken;
-        this.username = username;
         this.gameId = gameId;
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, username, null);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId, null, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);

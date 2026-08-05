@@ -1,9 +1,9 @@
 package client;
 import com.google.gson.Gson;
 import exception.DataAccessException;
+import exception.ResponseException;
 import request.*;
-import response.LoginResult;
-import response.RegisterResult;
+import response.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -88,16 +88,6 @@ public class ServerFacade {
         return list();
     }
 
-    public HttpResponse<String> list() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/game"))
-                .header("Authorization", authorization)
-                .GET()
-                .build();
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
     public HttpResponse<String> logout() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -110,28 +100,39 @@ public class ServerFacade {
         return response;
     }
 
-    public HttpResponse<String> join(int gameId, String color) throws  Exception {
+    public GameResult join(int gameId, String color) throws  DataAccessException, IOException, InterruptedException, ResponseException{
         if(!color.equals("BLACK") && !color.equals("WHITE")){
             throw new DataAccessException("Invalid color");
         }
         JoinRequest req = new JoinRequest(color, gameId);
         Gson gson = new Gson();
         String json = gson.toJson(req);
-
+        HttpResponse<String> response = list();
+        if(response.statusCode() != 200){
+            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
+            throw new DataAccessException(result.message());
+        }
+        ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
+        for(GameResult g : result.games()){
+            if(g.getGameID() == gameId){
+                return g;
+            }
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Could not find game");
+    }
+    public HttpResponse<String> list() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl +  "/game"))
+                .uri(URI.create(serverUrl + "/game"))
                 .header("Authorization", authorization)
-                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .GET()
                 .build();
-
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public String getAuthorization(){
         return authorization;
     }
-
 
     public void highlight(HighlightRequest req) throws Exception{
 

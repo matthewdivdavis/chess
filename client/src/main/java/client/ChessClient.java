@@ -3,6 +3,7 @@ package client;
 import chess.ChessGame;
 import chess.ChessPiece;
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import exception.ResponseException;
 import request.HighlightRequest;
 import request.LoginRequest;
@@ -244,32 +245,15 @@ public class ChessClient implements NotificationHandler{
         while(true){
             if(!color.equals("BLACK") && !color.equals("WHITE")){
                 out.printf("%sInvalid color input. Please choose color again (%s%sBLACK or WHITE%s%s): ",
-                        BLUE,
-                        MAGENTA,
-                        SET_TEXT_ITALIC,
-                        RESET_TEXT_ITALIC,
-                        BLUE);
+                        BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC, BLUE);
                 color = myScan.next();
             }
             else{
                 break;
             }
         }
-        server.join(gameId, color);
-        HttpResponse<String> response = server.list();
-        if(response.statusCode() == 200){
-            GameResult game = null;
-            Gson gson = new Gson();
-            ListGamesResult result = gson.fromJson(response.body(), ListGamesResult.class);
-            for(GameResult g : result.games()){
-                if(g.getGameID() == gameId){
-                    game = g;
-                }
-            }
-            if(game == null){
-                out.printf("%sCould not find game %d. Please Try again.\n", MAGENTA, gameId);
-                return;
-            }
+        try {
+            GameResult game = server.join(gameId, color);
             out.printf("%s%s\n", BLUE, game.toString());
             if(color.equals("BLACK")){
                 playerColor = "BLACK";
@@ -279,15 +263,13 @@ public class ChessClient implements NotificationHandler{
                 playerColor = "WHITE";
                 printGameWhite(out);
             }
-            // make the websocket connection here!!
-//            ws.connect(gameId, server.getAuthorization());
+            ws.connect(gameId, server.getAuthorization());
+            out.println("Successful connect");
             gamePlay(out);
+        } catch (DataAccessException | IOException | InterruptedException | ResponseException e){
+            out.println(e.toString());
         }
-        else{
-            Gson gson = new Gson();
-            ErrorResult result = gson.fromJson(response.body(), ErrorResult.class);
-            System.out.println(result.message());
-        }
+        // make the websocket connection here!!
     }
     private static void gamePlay(PrintStream out) throws Exception{
         out.printf("%sType 'help' to list commands.\n", LIGHT_GREY);
