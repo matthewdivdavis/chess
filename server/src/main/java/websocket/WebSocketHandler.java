@@ -9,13 +9,11 @@ import io.javalin.websocket.*;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import org.jetbrains.annotations.NotNull;
-import server.Server;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
-import javax.xml.crypto.Data;import java.io.IOException;
-import java.io.PushbackReader;import java.net.http.HttpClient;
+import java.io.IOException;
+
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connections = new ConnectionManager();

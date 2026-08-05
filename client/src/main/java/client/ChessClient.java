@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import request.HighlightRequest;
 import request.LoginRequest;
-import request.MoveRequest;
 import request.RegisterRequest;
 import response.*;
 import websocket.messages.ServerMessage;
