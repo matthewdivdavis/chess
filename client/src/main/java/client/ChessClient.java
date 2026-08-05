@@ -312,7 +312,7 @@ public class ChessClient implements NotificationHandler{
                 printGameWhite(out);
             }
             // make the websocket connection here!!
-            ws.connect(gameId, server.getAuthorization());
+//            ws.connect(gameId, server.getAuthorization());
             gamePlay(out);
         }
         else{
