@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
@@ -35,12 +37,8 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    if(notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
-                        System.out.println("ERROROREOREROJOJFSJOSODJFO SOSJD FOJS DOFJ ");
-                    }
-                    else {
-                        notificationHandler.notify(notification);
-                    }
+                    notificationHandler.notify(notification);
+//                    if(notification.getServerMessageType() == ServerMessage.ServerMessa
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -90,9 +88,12 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void move(int oldCol, int oldRow, int newCol, int newRow) throws Exception{
-        System.out.println("oldCol = " + oldCol + "\noldRow = " + oldRow + "\nnewCol = " + newCol + "\nnewRow = " + newRow);
         try{
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username, null, true, null);
+            ChessPosition oldPos = new ChessPosition(oldRow, oldCol);
+            ChessPosition newPos = new ChessPosition(newRow, newCol);
+            ChessMove move = new ChessMove(oldPos, newPos, null);
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username, new Gson().toJson(move), true, null);
+            System.out.println("Inside Facade Move");
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);

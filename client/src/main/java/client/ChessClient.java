@@ -35,21 +35,26 @@ public class ChessClient implements NotificationHandler {
     }
 
     public void notify(ServerMessage message) {
-        if(message.message != null){
+        if(message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
             System.out.println("\n" + RED + message.message);
             System.out.printf("%s[GAME PLAY] >>> ", LIGHT_GREY);
         }
         else if(message.errorMessage != null){
-            System.out.println(RED + message.errorMessage);
+            System.out.println("\n" + RED + message.errorMessage);
         }
         if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            try{
-                DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
-
-            } catch (Exception e) {
-                    System.out.println(e.toString());
+            if(message.message != null){
+                System.out.println("\n" + RED + message.message);
+                System.out.printf("%s[GAME PLAY] >>> ", LIGHT_GREY);
             }
+            else{
+                try{
+                    DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
 
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
         }
     }
     public static void run() throws Exception {
@@ -306,6 +311,8 @@ public class ChessClient implements NotificationHandler {
                         BLUE, LIGHT_GREY);
                 if(myScan.next().equals("y")){
                     ws.resign(userName, gameId);
+                    out.printf("%sResigning...\n", RED);
+                    return;
                 }
             }
             else if(userIn.equals("leave")){
@@ -361,10 +368,9 @@ public class ChessClient implements NotificationHandler {
                 SET_TEXT_ITALIC, BLUE,
                 RESET_TEXT_ITALIC);
         List<Character> result = validateMoveHighlight(out);
-        char col = result.get(0);
+        int col = result.get(0) - 'a' + 1;
         int row = result.get(1) - '0';
-        out.println("col = " + col+ "\nrow = " + row);
-        server.highlight(new HighlightRequest(col, row));
+        DrawChess.highlight(server.getGame(gameId),col, row, playerColor.equals("BLACK"));
     }
     private static List<Character> validateMoveMakeMove(PrintStream out){
         List<Character> result = new ArrayList<>();
@@ -426,14 +432,14 @@ public class ChessClient implements NotificationHandler {
         return result;
     }
     private static void makeMove(PrintStream out) throws Exception{
-        out.printf("%sInput piece's current position and the new desired position (%s%sCOLUMN ROW COLUMN ROW%s%s) : ",
+        out.printf("%sInput piece's current position and the new desired position \n(%s%sCOLUMN ROW COLUMN ROW%s%s) : ",
                 BLUE, MAGENTA,SET_TEXT_ITALIC, BLUE, RESET_TEXT_ITALIC);
         List<Character> result = validateMoveMakeMove(out);
         int oldCol = result.get(0) - 'a' + 1;
         int oldRow = result.get(1) - '0';
         int newCol = result.get(2) - 'a' + 1;
         int newRow = result.get(3) - '0';
-//        ws.move(oldCol, oldRow, newCol, newRow);
+        ws.move(oldCol, oldRow, newCol, newRow);
     }
     private static boolean logout(PrintStream out) throws Exception {
         HttpResponse<String> response = server.logout();
@@ -461,70 +467,5 @@ public class ChessClient implements NotificationHandler {
             return (char) (let + 32);
         }
         return let;
-    }
-    private static void printBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols){
-        String textColor;
-        String bgColor;
-        String textBold;
-        String lightBoard = SET_BG_COLOR_WHITE;
-        String darkBoard = SET_BG_COLOR_BROWN;
-        String boarderColor = SET_BG_COLOR_LIGHT_GREY;
-        String p;
-        out.printf("%s   %s%s", boarderColor, BLACK, SET_TEXT_BOLD);
-        for(char l : lets){
-            out.printf("  %s  ", l);
-        }
-        int r = 0;
-        int b = 0;
-        out.printf("   %s\n", RESET_BG_COLOR);
-        for(int a : range){
-            out.printf("%s %s%s%d ", boarderColor, BLACK, SET_TEXT_BOLD, 8 - a);
-            for(int c : cols){
-                textColor = BLACK;
-                textBold = SET_TEXT_BOLD;
-                p = board[r][b];
-                if(a % 2 == 0 && c % 2 == 0){
-                    bgColor = lightBoard;
-                }else if(a % 2 != 0 && c%2 != 0){
-                    bgColor = lightBoard;
-                }else{
-                    bgColor = darkBoard;
-                }
-                out.printf("%s %s%s%s %s%s", bgColor, textColor, textBold, p, RESET_TEXT_COLOR, RESET_BG_COLOR);
-                b++;
-            }
-            b = 0;
-            out.printf("%s %s%s%d %s%s\n", boarderColor, BLACK, SET_TEXT_BOLD,8 - a,RESET_TEXT_COLOR, RESET_BG_COLOR);
-            r++;
-        }
-        out.printf("%s   %s%s", boarderColor, BLACK, SET_TEXT_BOLD);
-        for(char l : lets){
-            out.printf("  %s  ", l);
-        }
-        out.printf("   %s%s%s\n", RESET_TEXT_COLOR, RESET_TEXT_BOLD_FAINT, RESET_BG_COLOR);
-    }
-    private static void printGameBlack(PrintStream out){
-        String[][] board = {
-                {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK},
-                {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
-                {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},};
-        char[] lets = {'h', 'g', 'f', 'e', 'd', 'c', 'b' ,'a'};
-        int[] range = {7, 6, 5, 4, 3, 2, 1, 0};
-        printBoard(out, board, lets, range, range);
-    }
-    private static void printGameWhite(PrintStream out){
-        String[][] board = {
-                {BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK},
-                {BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN, BLACK_PAWN,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,}, {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,},
-                {WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN, WHITE_PAWN,},
-                {WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}};
-        char[] lets = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-        int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
-        printBoard(out, board, lets, range, range);
     }
 }

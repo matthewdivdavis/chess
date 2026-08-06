@@ -8,6 +8,7 @@ import exception.ResponseException;
 import io.javalin.websocket.*;
 import model.AuthData;
 import model.GameData;
+import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -57,11 +58,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                         System.out.println("\nMaking Move\n");
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
-                        makeMove(userGameCommand.getUsername(), ctx.session, userGameCommand.getGameID());
-                    }
-                    else{
-                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
-                                null, null, "message: Make move error")));
+                        makeMove(getUsername(userGameCommand), ctx.session, userGameCommand.getGameID());
                     }
                 }
                 case LEAVE -> {
@@ -69,10 +66,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case RESIGN -> {
                     System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
-                    if(resign(userGameCommand, ctx.session, userGameCommand.getGameID(), ctx)){
-                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                                null, "Resigning...", null)));
-                    }
+                    resign(userGameCommand, ctx.session, userGameCommand.getGameID(), ctx);
 
                 }
             }
@@ -195,6 +189,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 return false;
             }
             ChessGame chessGame = gameData.getGame();
+            if(chessGame.getBoard().getPiece(move.getStartPosition()) == null){
+                return false;
+            }
             if(chessGame.getTeamTurn() == chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor()){
                 if(chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK && gameData.getBlackUsername().equals(authData.getUsername())){
                     return true;
@@ -245,9 +242,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private boolean validMove(UserGameCommand userGameCommand, WsMessageContext ctx){
-        return checkAuth(userGameCommand.getAuthToken())
-                && checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken())
-                && checkMove(userGameCommand.getMove(), userGameCommand.getGameID(), ctx);
+        if(!checkAuth(userGameCommand.getAuthToken())){
+            ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, null, "message: You are not authorized. Leave game and rejoin. ")));
+            return false;
+        }
+        if(!checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken())){
+            ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, null, "message: Not your turn or piece in given position doesn't exist. Please try a different move.")));
+            return false;
+        }
+        if(!checkMove(userGameCommand.getMove(), userGameCommand.getGameID(), ctx)){
+            ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                    null, null, "message: Not your turn or piece in given position doesn't exist. Please try a different move.")));
+            return false;
+        }
+        return true;
     }
 
     private boolean checkLogin(UserGameCommand userGameCommand){
