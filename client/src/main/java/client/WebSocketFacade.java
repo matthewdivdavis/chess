@@ -1,7 +1,6 @@
 package client;
 
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
@@ -13,6 +12,9 @@ import websocket.commands.UserGameCommand;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Scanner;
+
+import static ui.EscapeSequences.*;
 
 
 public class WebSocketFacade extends Endpoint {
@@ -87,16 +89,53 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void move(int oldCol, int oldRow, int newCol, int newRow) throws Exception{
+    public void move(int oldCol, int oldRow, int newCol, int newRow, ChessBoard chessBoard) throws Exception{
         try{
             ChessPosition oldPos = new ChessPosition(oldRow, oldCol);
             ChessPosition newPos = new ChessPosition(newRow, newCol);
-            ChessMove move = new ChessMove(oldPos, newPos, null);
+            ChessPiece.PieceType promotion = null;
+            if(newPos.getRow() == 8
+                    && chessBoard.getPiece(oldPos).getPieceType() == ChessPiece.PieceType.PAWN
+                    && chessBoard.getPiece(oldPos).getTeamColor() == ChessGame.TeamColor.WHITE){
+                promotion = promotePiece();
+            } else if(newPos.getRow() == 1
+                    && chessBoard.getPiece(oldPos).getPieceType() == ChessPiece.PieceType.PAWN
+                    && chessBoard.getPiece(oldPos).getTeamColor() == ChessGame.TeamColor.BLACK){
+                promotion = promotePiece();
+            }
+            ChessMove move = new ChessMove(oldPos, newPos, promotion);
             var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username, new Gson().toJson(move), true, null);
-            System.out.println("Inside Facade Move");
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
+        }
+    }
+
+    private ChessPiece.PieceType  promotePiece(){
+        System.out.printf("%sThis move will cause your pawn to be promoted.\nPlease pick a promotion piece type \n(%s%sQUEEN, BISHOP, KNIGHT, ROOK%s%s): ",
+                BLUE, SET_TEXT_ITALIC, MAGENTA, RESET_TEXT_ITALIC, BLUE);
+        Scanner myScan = new Scanner(System.in);
+        String type = myScan.next();
+        while(true){
+            switch (type) {
+                case "QUEEN", "Queen", "queen" -> {
+                    return ChessPiece.PieceType.QUEEN;
+                }
+                case "BISHOP", "Bishop", "bishop" -> {
+                    return ChessPiece.PieceType.BISHOP;
+                }
+                case "KNIGHT", "Knight", "knight" -> {
+                    return ChessPiece.PieceType.KNIGHT;
+                }
+                case "ROOK", "Rook", "rook" -> {
+                    return ChessPiece.PieceType.ROOK;
+                }
+                default -> {
+                    System.out.printf("%sNo match found.\nPlease pick a promotion piece type \n(%s%sQUEEN, BISHOP, KNIGHT, ROOK%s%s): ",
+                            BLUE, SET_TEXT_ITALIC, MAGENTA, RESET_TEXT_ITALIC, BLUE);
+                    type = myScan.next();
+                }
+            }
         }
     }
 

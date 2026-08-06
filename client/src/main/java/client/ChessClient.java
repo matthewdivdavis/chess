@@ -461,7 +461,7 @@ public class ChessClient implements NotificationHandler {
         int oldRow = result.get(1) - '0';
         int newCol = result.get(2) - 'a' + 1;
         int newRow = result.get(3) - '0';
-        ws.move(oldCol, oldRow, newCol, newRow);
+        ws.move(oldCol, oldRow, newCol, newRow, server.getGame(gameId).getGame().getBoard());
     }
     private static boolean logout(PrintStream out) throws Exception {
         HttpResponse<String> response = server.logout();
