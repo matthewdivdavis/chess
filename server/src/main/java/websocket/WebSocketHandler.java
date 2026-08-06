@@ -159,14 +159,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return false;
     }
 
-    private void checkMateMessage(String color, Session session, int gameId) throws IOException, DataAccessException{
-        var message = String.format("message: %s is in checkmate. ", color);
+    private void checkMateMessage(String color, Session session, int gameId, UserGameCommand userGameCommand) throws IOException, DataAccessException{
+        var message = String.format("message: %s is in checkmate. ", getUsername(userGameCommand));
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
     }
 
-    private void isInCheckMessage(String color, Session session, int gameId) throws IOException, DataAccessException {
-        var message = String.format("message: %s is in check. ", color);
+    private void isInCheckMessage(String color, Session session, int gameId, UserGameCommand userGameCommand) throws IOException, DataAccessException {
+        var message = String.format("message: %s is in check. ", getUsername(userGameCommand));
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
     }
@@ -177,6 +177,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var message = String.format("message: %s has made a move", username);
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
+    }
+
+    private boolean isInCheck(UserGameCommand userGameCommand){
+        return true;
     }
 
     private boolean checkTurn(ChessMove move, int gameId, String authToken){
@@ -206,7 +210,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return false;
     }
 
-    private boolean checkMove(ChessMove move, int gameId, WsMessageContext ctx){
+    private boolean checkMove(ChessMove move, int gameId, WsMessageContext ctx, UserGameCommand userGameCommand){
         try{
             MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
             ChessGame chessGame = mySqlDataAccess.getGame(gameId).getGame();
@@ -220,13 +224,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     chessGame.makeMove(move);
                     mySqlDataAccess.updateGame(gameId, chessGame);
                     if(chessGame.isInCheckmate(chessGame.getTeamTurn())){
-                        checkMateMessage(chessGame.getTeamTurn().toString(), ctx.session, gameId);
+                        checkMateMessage(chessGame.getTeamTurn().toString(), ctx.session, gameId, userGameCommand);
                         String msg = "message: " + chessGame.getTeamTurn().toString() + " is in checkmate";
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                                 null, msg, null)));
                     }
                     else if(chessGame.isInCheck(chessGame.getTeamTurn())){
-                        isInCheckMessage(chessGame.getTeamTurn().toString(), ctx.session, gameId);
+                        isInCheckMessage(chessGame.getTeamTurn().toString(), ctx.session, gameId, userGameCommand);
                         String msg = "message: " + chessGame.getTeamTurn().toString() + " is in check";
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                                 null, msg, null)));
@@ -252,7 +256,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     null, null, "message: Not your turn or piece in given position doesn't exist. Please try a different move.")));
             return false;
         }
-        if(!checkMove(userGameCommand.getMove(), userGameCommand.getGameID(), ctx)){
+        if(!checkMove(userGameCommand.getMove(), userGameCommand.getGameID(), ctx, userGameCommand)){
             ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
                     null, null, "message: Not your turn or piece in given position doesn't exist. Please try a different move.")));
             return false;

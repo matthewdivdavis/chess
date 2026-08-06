@@ -28,6 +28,8 @@ public class ChessClient implements NotificationHandler {
     private static ServerFacade server;
     private static WebSocketFacade ws;
     public static String playerColor;
+    public static boolean resign = false;
+    public static boolean observer = false;
 
     public ChessClient(String serverUrl) throws ResponseException{
         server = new ServerFacade(serverUrl);
@@ -249,6 +251,12 @@ public class ChessClient implements NotificationHandler {
             return false;
         }
         DrawChess.drawBoard(server.getGame(gameId), false);
+        try {
+            observer = true;
+            gamePlay(out);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
         return true;
     }
     private static void join(PrintStream out) throws Exception {
@@ -306,13 +314,19 @@ public class ChessClient implements NotificationHandler {
                 helpGamePlay(out);
             }
             else if(userIn.equals("resign")){
-                out.printf("%sAre you sure you wish to resign? (%s%sy or n%s%s): %s",
-                        BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
-                        BLUE, LIGHT_GREY);
-                if(myScan.next().equals("y")){
-                    ws.resign(userName, gameId);
-                    out.printf("%sResigning...\n", RED);
-                    return;
+                if(observer){
+                    out.printf("%sObserver cannot resign. If you'd like to leave type 'leave'.", MAGENTA);
+
+                }
+                else{
+                    out.printf("%sAre you sure you wish to resign? (%s%sy or n%s%s): %s",
+                            BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
+                            BLUE, LIGHT_GREY);
+                    if(myScan.next().equals("y")){
+                        ws.resign(userName, gameId);
+                        out.printf("%sResigning...\n", RED);
+                        resign = true;
+                    }
                 }
             }
             else if(userIn.equals("leave")){
@@ -320,7 +334,15 @@ public class ChessClient implements NotificationHandler {
                 return;
             }
             else if(userIn.equals("move")){
-                makeMove(out);
+                if(resign){
+                    out.printf("%sYou cannot make new moves after resigning.", BLUE);
+                }
+                else if(observer){
+                    out.printf("%sObserver cannot make moves.", MAGENTA);
+                }
+                else{
+                    makeMove(out);
+                }
             }
             else if(userIn.equals("highlight")){
                 highlightMoves(out);
