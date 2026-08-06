@@ -36,16 +36,17 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (userGameCommand.getCommandType()) {
                 case CONNECT -> {
                     System.out.println("\nConnecting\n");
-                    System.out.println(ctx.message());
                     if(checkLogin(userGameCommand)){
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
                         enter(userGameCommand, ctx.session);
                     }
+                    else if(!userGameCommand.getPlay()){
+                        enter(userGameCommand, ctx.session);
+                    }
                     else{
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
                                 null, null, "message: You are not authorized")));
-//                        error(userGameCommand.getUsername(), ctx.session);
                     }
                 }
                 case MAKE_MOVE -> {
@@ -75,7 +76,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
             }
         } catch (IOException | DataAccessException e){
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println("Error in server");
         }
 
     }
@@ -117,8 +119,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void enter(UserGameCommand userGameCommand, Session session) throws IOException, DataAccessException{
         connections.add(session, userGameCommand.getGameID());
-
-
         var message = String.format("message: %s has joined the game", getUsername(userGameCommand));
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, userGameCommand.getGameID());
@@ -250,6 +250,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private boolean checkLogin(UserGameCommand userGameCommand){
+        if(userGameCommand.getPlay()){
+            try {
+                MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
+                if(userGameCommand.getColor().equals("WHITE")){
+                    mySqlDataAccess.updateWhite(userGameCommand.getGameID(), mySqlDataAccess.getAuth(userGameCommand.getAuthToken()).getUsername());
+                } else{
+                    mySqlDataAccess.updateBlack(userGameCommand.getGameID(), mySqlDataAccess.getAuth(userGameCommand.getAuthToken()).getUsername());
+                }
+            } catch (ResponseException | DataAccessException e){
+                System.out.println(e.toString());
+            }
+        }
         return checkAuth(userGameCommand.getAuthToken())
                 && checkGameId(userGameCommand.getGameID());
     }

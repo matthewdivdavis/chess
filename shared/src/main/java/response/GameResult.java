@@ -16,6 +16,14 @@ public class GameResult {
         gameName = game.getGameName();
     }
 
+    public String getWhiteUsername() {
+        return whiteUsername;
+    }
+
+    public String getBlackUsername(){
+        return blackUsername;
+    }
+
     public int getGameID(){
         return gameID;
     }

@@ -21,7 +21,7 @@ import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class ChessClient implements NotificationHandler{
+public class ChessClient implements NotificationHandler {
     public static String userName = null;
     private static ServerFacade server;
     private static WebSocketFacade ws;
@@ -33,7 +33,13 @@ public class ChessClient implements NotificationHandler{
     }
 
     public void notify(ServerMessage message) {
-        System.out.println(RED + message);
+        if(message.message != null){
+            System.out.println("\n" + RED + message.message);
+            System.out.printf("%s[GAME PLAY] >>> ", LIGHT_GREY);
+        }
+        else if(message.errorMessage != null){
+            System.out.println(RED + message.errorMessage);
+        }
     }
     public static void run() throws Exception {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -221,6 +227,10 @@ public class ChessClient implements NotificationHandler{
             return false;
         }
         out.printf("%s%s\n", BLUE, game.toString());
+        if(!ws.observe(gameId)){
+            out.printf("%sConnection error. Please try again\n", MAGENTA);
+            return false;
+        }
         printGameWhite(out);
         return true;
     }
@@ -232,9 +242,7 @@ public class ChessClient implements NotificationHandler{
         while(true){
             try {
                 gameId = myScan.nextInt();
-                if(gameId < 1){
-                    out.printf("%sInvalid ID input. Please try again: ", BLUE);
-                }
+                if(gameId < 1) out.printf("%sInvalid ID input. Please try again: ", BLUE);
                 break;
             } catch (Exception e) {
                 out.printf("%sInvalid ID input. Please try again: ", BLUE);
@@ -254,6 +262,10 @@ public class ChessClient implements NotificationHandler{
         }
         try {
             GameResult game = server.join(gameId, color);
+            if((color.equals("BLACK") && game.getBlackUsername() != null) || (color.equals("WHITE") && game.getWhiteUsername() != null)){
+                out.printf("%sTeam '%s' is taken. Please try a different color, or different game.\n", BLUE, color);
+                return;
+            }
             out.printf("%s%s\n", BLUE, game.toString());
             if(color.equals("BLACK")){
                 playerColor = "BLACK";
@@ -263,13 +275,11 @@ public class ChessClient implements NotificationHandler{
                 playerColor = "WHITE";
                 printGameWhite(out);
             }
-            ws.connect(gameId, server.getAuthorization());
-            out.println("Successful connect");
+            ws.join(gameId, server.getAuthorization(), playerColor);
             gamePlay(out);
         } catch (DataAccessException | IOException | InterruptedException | ResponseException e){
             out.println(e.toString());
         }
-        // make the websocket connection here!!
     }
     private static void gamePlay(PrintStream out) throws Exception{
         out.printf("%sType 'help' to list commands.\n", LIGHT_GREY);
@@ -416,7 +426,7 @@ public class ChessClient implements NotificationHandler{
         int oldRow = result.get(1) - '0';
         int newCol = result.get(2) - 'a' + 1;
         int newRow = result.get(3) - '0';
-        ws.move(oldCol, oldRow, newCol, newRow);
+//        ws.move(oldCol, oldRow, newCol, newRow);
     }
     private static boolean logout(PrintStream out) throws Exception {
         HttpResponse<String> response = server.logout();

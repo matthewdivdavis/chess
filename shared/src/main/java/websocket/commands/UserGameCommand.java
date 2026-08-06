@@ -19,17 +19,29 @@ public class UserGameCommand {
     private final String username;
     private final Integer gameID;
     private final ChessMove move;
+    private final boolean play;
+    private final String color;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, String move) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String username, String move, boolean play, String color) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
         this.username = username;
         this.move = new Gson().fromJson(move, ChessMove.class);
+        this.play = play;
+        this.color = color;
     }
 
     public ChessMove getMove(){
         return move;
+    }
+
+    public String getColor(){
+        return color;
+    }
+
+    public boolean getPlay(){
+        return play;
     }
 
     public String getUsername() {
