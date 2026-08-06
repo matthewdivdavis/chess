@@ -2,9 +2,9 @@ package client;
 import com.google.gson.Gson;
 import exception.DataAccessException;
 import exception.ResponseException;
+import model.GameData;
 import request.*;
 import response.*;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -128,6 +128,18 @@ public class ServerFacade {
                 .GET()
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public GameData getGame(int gameId) throws IOException, InterruptedException{
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().
+                uri(URI.create(serverUrl + "/getGame/" + gameId))
+                .header("Authorization", authorization)
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        GameResult result = new Gson().fromJson(response.body(), GameResult.class);
+        return result.getGameData();
     }
 
     public String getAuthorization(){

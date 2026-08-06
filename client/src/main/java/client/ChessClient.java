@@ -5,6 +5,7 @@ import chess.ChessPiece;
 import com.google.gson.Gson;
 import exception.DataAccessException;
 import exception.ResponseException;
+import model.GameData;
 import request.HighlightRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
@@ -23,6 +24,7 @@ import static ui.EscapeSequences.*;
 
 public class ChessClient implements NotificationHandler {
     public static String userName = null;
+    public static int gameId;
     private static ServerFacade server;
     private static WebSocketFacade ws;
     public static String playerColor;
@@ -39,6 +41,15 @@ public class ChessClient implements NotificationHandler {
         }
         else if(message.errorMessage != null){
             System.out.println(RED + message.errorMessage);
+        }
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            try{
+                DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
+
+            } catch (Exception e) {
+                    System.out.println(e.toString());
+            }
+
         }
     }
     public static void run() throws Exception {
@@ -142,6 +153,7 @@ public class ChessClient implements NotificationHandler {
         if(response.statusCode() == 200){
             LoginResult result = gson.fromJson(response.body(), LoginResult.class);
             System.out.println("Logged in as " + username);
+            userName = username;
             return true;
         }
         else{
@@ -227,11 +239,11 @@ public class ChessClient implements NotificationHandler {
             return false;
         }
         out.printf("%s%s\n", BLUE, game.toString());
-        if(!ws.observe(gameId)){
+        if(!ws.observe(gameId, server.getAuthorization())){
             out.printf("%sConnection error. Please try again\n", MAGENTA);
             return false;
         }
-        printGameWhite(out);
+        DrawChess.drawBoard(server.getGame(gameId), false);
         return true;
     }
     private static void join(PrintStream out) throws Exception {
@@ -262,24 +274,22 @@ public class ChessClient implements NotificationHandler {
         }
         try {
             GameResult game = server.join(gameId, color);
+            ChessClient.gameId = gameId;
             if((color.equals("BLACK") && game.getBlackUsername() != null) || (color.equals("WHITE") && game.getWhiteUsername() != null)){
                 out.printf("%sTeam '%s' is taken. Please try a different color, or different game.\n", BLUE, color);
                 return;
             }
-            out.printf("%s%s\n", BLUE, game.toString());
             if(color.equals("BLACK")){
                 playerColor = "BLACK";
-                printGameBlack(out);
             }
             else{
                 playerColor = "WHITE";
-                printGameWhite(out);
             }
             ws.join(gameId, server.getAuthorization(), playerColor);
-            gamePlay(out);
         } catch (DataAccessException | IOException | InterruptedException | ResponseException e){
             out.println(e.toString());
         }
+        gamePlay(out);
     }
     private static void gamePlay(PrintStream out) throws Exception{
         out.printf("%sType 'help' to list commands.\n", LIGHT_GREY);
@@ -295,10 +305,11 @@ public class ChessClient implements NotificationHandler {
                         BLUE, MAGENTA, SET_TEXT_ITALIC, RESET_TEXT_ITALIC,
                         BLUE, LIGHT_GREY);
                 if(myScan.next().equals("y")){
-                    return;
+                    ws.resign(userName, gameId);
                 }
             }
             else if(userIn.equals("leave")){
+                ws.leave(userName, gameId);
                 return;
             }
             else if(userIn.equals("move")){
@@ -308,11 +319,7 @@ public class ChessClient implements NotificationHandler {
                 highlightMoves(out);
             }
             else if(userIn.equals("redraw")){
-                if(playerColor.equals("BLACK")){
-                    printGameBlack(out);
-                }else{
-                    printGameWhite(out);
-                }
+                DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
             }
         }
     }

@@ -9,15 +9,21 @@ public class GameResult {
     String whiteUsername;
     String blackUsername;
     String gameName;
+    GameData gameData;
     public GameResult(GameData game){
         gameID = game.getGameID();
         whiteUsername = game.getWhiteUsername();
         blackUsername = game.getBlackUsername();
         gameName = game.getGameName();
+        gameData = game;
     }
 
     public String getWhiteUsername() {
         return whiteUsername;
+    }
+
+    public GameData getGameData(){
+        return gameData;
     }
 
     public String getBlackUsername(){

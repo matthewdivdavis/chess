@@ -1,11 +1,10 @@
 package server;
 
-import com.google.gson.Gson;
 import handlers.*;
 import io.javalin.*;
-import io.javalin.http.Handler;
+
 import service.SQLUserService;
-import service.UserService;
+
 import websocket.WebSocketHandler;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -34,10 +33,10 @@ public class Server {
         javalin.post("/session", new LoginHandler(userService));
         javalin.delete("/session", new LogoutHandler(userService));
         javalin.post("/game", new CreateHandler(userService));
+        javalin.get("/getGame/{gameId}", new GetGameHandler(userService));
         javalin.get("/game", new ListHandler(userService));
         javalin.put("/game", new JoinHandler(userService));
         javalin.delete("/db", new ClearHandler(userService));
-
     }
 
     public int run(int desiredPort) {

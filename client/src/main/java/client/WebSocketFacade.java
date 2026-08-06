@@ -1,12 +1,10 @@
 package client;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
 import jakarta.websocket.*;
 
-import request.*;
 import websocket.messages.ServerMessage;
 import websocket.commands.UserGameCommand;
 
@@ -50,7 +48,8 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public boolean observe(int gameId){
+    public boolean observe(int gameId, String authToken){
+        authorization = authToken;
         try{
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authorization, gameId, null, null, false, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
@@ -69,6 +68,24 @@ public class WebSocketFacade extends Endpoint {
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
+        }
+    }
+
+    public void leave(String username, int gameId){
+        try{
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authorization, gameId, null, null, false, null);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException e){
+            System.out.println(e.toString());
+        }
+    }
+
+    public void resign(String username, int gameId){
+        try{
+            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authorization, gameId, null, null, false, null);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException e){
+            System.out.println(e.toString());
         }
     }
 

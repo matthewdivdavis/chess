@@ -6,6 +6,7 @@ import exception.MissingDataException;
 import exception.NameTakenException;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import response.*;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 
 public class SQLUserService implements ClearService,
         CreateService, LoginService, RegisterService,
-        JoinService, ListService, LogoutService {
+        JoinService, ListService, LogoutService, GetGameService {
     MySqlDataAccess sqlDataAccess;
 
     public SQLUserService(){
@@ -100,6 +101,20 @@ public class SQLUserService implements ClearService,
         }
         return result;
     }
+    @Override
+    public GameResult getGame(ListRequest request, int gameId) throws DataAccessException, ResponseException{
+        if(sqlDataAccess.getAuth(request.authToken()) == null){
+            throw new DataAccessException("unauthorized");
+        }
+        GameList gameList = sqlDataAccess.listGames();
+        for(int i = 0; i < gameList.size(); i++){
+            if(gameList.at(i).getGameID() == gameId){
+                return new GameResult(gameList.at(i));
+            }
+        }
+        return null;
+    }
+
     @Override
     public JoinResult join(String authToken, JoinRequest request) throws DataAccessException, MissingDataException, ResponseException{
         if(request.playerColor() == null){

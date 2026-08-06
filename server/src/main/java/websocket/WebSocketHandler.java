@@ -36,13 +36,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (userGameCommand.getCommandType()) {
                 case CONNECT -> {
                     System.out.println("\nConnecting\n");
-                    if(checkLogin(userGameCommand)){
+                    if(!userGameCommand.getPlay()){
+                        System.out.println(ctx.message());
+                        enter(userGameCommand, ctx.session, "joined as an observer to");
+                    }
+                    else if(checkLogin(userGameCommand)){
+                        System.out.println(ctx.message());
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
-                        enter(userGameCommand, ctx.session);
-                    }
-                    else if(!userGameCommand.getPlay()){
-                        enter(userGameCommand, ctx.session);
+                        enter(userGameCommand, ctx.session, "joined");
                     }
                     else{
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
@@ -63,7 +65,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                 }
                 case LEAVE -> {
-                    System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
                     leave(userGameCommand, ctx.session);
                 }
                 case RESIGN -> {
@@ -117,9 +118,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return null;
     }
 
-    private void enter(UserGameCommand userGameCommand, Session session) throws IOException, DataAccessException{
+    private void enter(UserGameCommand userGameCommand, Session session, String join) throws IOException, DataAccessException{
         connections.add(session, userGameCommand.getGameID());
-        var message = String.format("message: %s has joined the game", getUsername(userGameCommand));
+        var message = String.format("message: %s has %s the game", getUsername(userGameCommand), join);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, userGameCommand.getGameID());
     }
@@ -253,7 +254,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if(userGameCommand.getPlay()){
             try {
                 MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
-                if(userGameCommand.getColor().equals("WHITE")){
+                if(userGameCommand.getColor() != null
+                        && userGameCommand.getColor().equals("WHITE")){
                     mySqlDataAccess.updateWhite(userGameCommand.getGameID(), mySqlDataAccess.getAuth(userGameCommand.getAuthToken()).getUsername());
                 } else{
                     mySqlDataAccess.updateBlack(userGameCommand.getGameID(), mySqlDataAccess.getAuth(userGameCommand.getAuthToken()).getUsername());
