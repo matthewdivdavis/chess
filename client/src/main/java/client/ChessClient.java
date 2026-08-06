@@ -348,7 +348,11 @@ public class ChessClient implements NotificationHandler {
                 highlightMoves(out);
             }
             else if(userIn.equals("redraw")){
-                DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
+                if(observer){
+                    DrawChess.drawBoard(server.getGame(gameId), false);
+                }else{
+                    DrawChess.drawBoard(server.getGame(gameId), playerColor.equals("BLACK"));
+                }
             }
         }
     }

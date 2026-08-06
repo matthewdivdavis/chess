@@ -179,11 +179,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, notification, gameId);
     }
 
-    private boolean isInCheck(UserGameCommand userGameCommand){
-        return true;
-    }
-
-    private boolean checkTurn(ChessMove move, int gameId, String authToken){
+    private boolean checkTurn(ChessMove move, int gameId, String authToken, WsMessageContext ctx){
         try{
             MySqlDataAccess mySqlDataAccess = new MySqlDataAccess();
 
@@ -194,6 +190,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
             ChessGame chessGame = gameData.getGame();
             if(chessGame.getBoard().getPiece(move.getStartPosition()) == null){
+                ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
+                        null, null, "message: No piece in given position.")));
                 return false;
             }
             if(chessGame.getTeamTurn() == chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor()){
@@ -251,7 +249,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     null, null, "message: You are not authorized. Leave game and rejoin. ")));
             return false;
         }
-        if(!checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken())){
+        if(!checkTurn(userGameCommand.getMove(), userGameCommand.getGameID(), userGameCommand.getAuthToken(), ctx)){
             ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.ERROR,
                     null, null, "message: Not your turn or piece in given position doesn't exist. Please try a different move.")));
             return false;
