@@ -37,11 +37,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (userGameCommand.getCommandType()) {
                 case CONNECT -> {
                     System.out.println("\nConnecting\n");
-                    if(!userGameCommand.getPlay()){
-                        System.out.println(ctx.message());
-                        enter(userGameCommand, ctx.session, "joined as an observer to");
-                    }
-                    else if(checkLogin(userGameCommand)){
+                    if(checkLogin(userGameCommand)){
                         System.out.println(ctx.message());
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
@@ -66,8 +62,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
                 case RESIGN -> {
                     System.out.println("\n\n\n" + ctx.message() + "\n\n\n");
-                    resign(userGameCommand, ctx.session, userGameCommand.getGameID(), ctx);
-
+                    if(resign(userGameCommand, ctx.session, userGameCommand.getGameID(), ctx)){
+                        ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                                null, "Resign..", null)));
+                    }
                 }
             }
         } catch (IOException | DataAccessException e){
