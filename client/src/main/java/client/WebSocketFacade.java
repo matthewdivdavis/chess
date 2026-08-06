@@ -104,7 +104,8 @@ public class WebSocketFacade extends Endpoint {
                 promotion = promotePiece();
             }
             ChessMove move = new ChessMove(oldPos, newPos, promotion);
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authorization, gameId, username, new Gson().toJson(move), true, null);
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE,
+                    authorization, gameId, username, new Gson().toJson(move), true, null);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException e) {
             throw new Exception(e);
@@ -112,7 +113,9 @@ public class WebSocketFacade extends Endpoint {
     }
 
     private ChessPiece.PieceType  promotePiece(){
-        System.out.printf("%sThis move will cause your pawn to be promoted.\nPlease pick a promotion piece type \n(%s%sQUEEN, BISHOP, KNIGHT, ROOK%s%s): ",
+        System.out.printf("%sThis move will cause your pawn to be promoted." +
+                        "\nPlease pick a promotion piece type " +
+                        "\n(%s%sQUEEN, BISHOP, KNIGHT, ROOK%s%s): ",
                 BLUE, SET_TEXT_ITALIC, MAGENTA, RESET_TEXT_ITALIC, BLUE);
         Scanner myScan = new Scanner(System.in);
         String type = myScan.next();

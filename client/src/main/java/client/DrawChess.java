@@ -149,7 +149,8 @@ public class DrawChess {
         int[] range = {0, 1, 2, 3, 4, 5, 6, 7};
         printHighlightBoard(new PrintStream(System.out, true, StandardCharsets.UTF_8), board, lets, range, range, validMoves, startPos);
     }
-    private static void printHighlightBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols, List<ChessMove> validMoves, ChessPosition startPos){
+    private static void printHighlightBoard(PrintStream out, String[][] board, char[] lets, int[] range, int[] cols,
+                                            List<ChessMove> validMoves, ChessPosition startPos){
         String textColor;
         String bgColor;
         String textBold;

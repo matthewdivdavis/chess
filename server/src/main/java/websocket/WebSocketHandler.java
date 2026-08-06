@@ -159,13 +159,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return false;
     }
 
-    private void checkMateMessage(String color, Session session, int gameId, UserGameCommand userGameCommand) throws IOException, DataAccessException{
+    private void checkMateMessage(String color, Session session, int gameId, UserGameCommand userGameCommand)
+            throws IOException, DataAccessException{
         var message = String.format("message: %s is in checkmate. ", getUsername(userGameCommand));
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
     }
 
-    private void isInCheckMessage(String color, Session session, int gameId, UserGameCommand userGameCommand) throws IOException, DataAccessException {
+    private void isInCheckMessage(String color, Session session, int gameId, UserGameCommand userGameCommand)
+            throws IOException, DataAccessException {
         var message = String.format("message: %s is in check. ", getUsername(userGameCommand));
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);

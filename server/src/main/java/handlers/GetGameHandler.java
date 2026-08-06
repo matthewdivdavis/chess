@@ -25,20 +25,17 @@ public class GetGameHandler implements Handler {
         int gameId = Integer.parseInt(ctx.pathParam("gameId"));
         String authTok = ctx.header("authorization");
         ListRequest listRequest = new ListRequest(authTok);
-        Gson gson = new Gson();
+
         try{
-            GameResult result = userService.getGame(listRequest, gameId); 
-            ctx.result(gson.toJson(result));
-            ctx.contentType("application/json");
+            GameResult result = userService.getGame(listRequest, gameId);
+            ctx.result(new Gson().toJson(result));ctx.contentType("application/json");
         } catch (DataAccessException e){
             ctx.status(401);
-            ctx.result(gson.toJson(
-                    Map.of("message", "Error: " + e.getMessage())
-            ));
+            ctx.result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         } catch(ResponseException e){
             ctx.status(500);
-            ctx.result(gson.toJson(Map.of("message", "Error: " + e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage())));
             ctx.contentType("application/json");
         }
     }

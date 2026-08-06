@@ -26,10 +26,6 @@ public class WsClient extends Endpoint {
         });
     }
 
-    public void connect() throws IOException {
-        session.getBasicRemote().sendText("CONNECT");
-    }
-
 
     public void onOpen(Session session, EndpointConfig endpointConfig){
     }

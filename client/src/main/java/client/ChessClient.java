@@ -267,7 +267,9 @@ public class ChessClient implements NotificationHandler {
         while(true){
             try {
                 gameId = myScan.nextInt();
-                if(gameId < 1) out.printf("%sInvalid ID input. Please try again: ", BLUE);
+                if(gameId < 1) {
+                    out.printf("%sInvalid ID input. Please try again: ", BLUE);
+                }
                 break;
             } catch (Exception e) {
                 out.printf("%sInvalid ID input. Please try again: ", BLUE);
@@ -418,8 +420,7 @@ public class ChessClient implements NotificationHandler {
                 result.add(oldCol);
                 break;
             } else {
-                out.printf("%sInvalid first input column. Input a single letter between a-h: ",
-                        BLUE);
+                out.printf("%sInvalid first input column. Input a single letter between a-h: ", BLUE);
                 oldCol = myScan.next().charAt(0);
             }
         }
@@ -429,8 +430,7 @@ public class ChessClient implements NotificationHandler {
                 break;
             }
             else{
-                out.printf("%sInvalid first row input. Input a single number between 1 and 8: ",
-                        BLUE);
+                out.printf("%sInvalid first row input. Input a single number between 1 and 8: ", BLUE);
                 oldRow = myScan.next().charAt(0);
             }
         }
@@ -441,8 +441,7 @@ public class ChessClient implements NotificationHandler {
                 result.add(newCol);
                 break;
             } else {
-                out.printf("%sInvalid second input column. Input a single letter between a-h: ",
-                        BLUE);
+                out.printf("%sInvalid second input column. Input a single letter between a-h: ", BLUE);
                 newCol = myScan.next().charAt(0);
             }
         }
@@ -452,8 +451,7 @@ public class ChessClient implements NotificationHandler {
                 break;
             }
             else{
-                out.printf("%sInvalid second row input. Input a single number between 1 and 8: ",
-                        BLUE);
+                out.printf("%sInvalid second row input. Input a single number between 1 and 8: ", BLUE);
                 newRow = myScan.next().charAt(0);
             }
         }
