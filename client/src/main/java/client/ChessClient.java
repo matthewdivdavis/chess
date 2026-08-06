@@ -330,7 +330,9 @@ public class ChessClient implements NotificationHandler {
                 }
             }
             else if(userIn.equals("leave")){
-                ws.leave(userName, gameId);
+                if(!observer){
+                    ws.leave(userName, gameId);
+                }
                 return;
             }
             else if(userIn.equals("move")){

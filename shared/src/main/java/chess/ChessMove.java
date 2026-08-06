@@ -65,4 +65,12 @@ public class ChessMove {
     public String toString() {
         return String.format("startPosition: %s\nendPosition: %s\npromotionPiece: %s", startPosition, endPosition,promotionPiece);
     }
+
+    public String pretty() {
+        char startCol = (char) ('a' + startPosition.getColumn() - 1);
+        char endCol = (char) ('a' + endPosition.getColumn() - 1);
+        int startRow = startPosition.getRow();
+        int endRow = endPosition.getRow();
+        return String.format("from [" + startCol + "," + startRow + "] to [" + endCol + "," + endRow + "]");
+    }
 }

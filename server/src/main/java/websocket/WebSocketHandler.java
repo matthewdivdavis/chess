@@ -58,7 +58,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                         System.out.println("\nMaking Move\n");
                         ctx.send(new Gson().toJson(new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                                 userGameCommand.getGameID(), null, null)));
-                        makeMove(getUsername(userGameCommand), ctx.session, userGameCommand.getGameID());
+                        makeMove(userGameCommand, ctx.session, userGameCommand.getGameID());
                     }
                 }
                 case LEAVE -> {
@@ -171,10 +171,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, notification, gameId);
     }
 
-    private void makeMove(String username, Session session, int gameId) throws IOException, DataAccessException{
+    private void makeMove(UserGameCommand userGameCommand, Session session, int gameId) throws IOException, DataAccessException{
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, 0, null, null);
         connections.broadcast(session, notification, gameId);
-        var message = String.format("message: %s has made a move", username);
+        var message = String.format("message: %s has made a move: %s", getUsername(userGameCommand), userGameCommand.getMove().pretty());
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null, message, null);
         connections.broadcast(session, notification, gameId);
     }
